@@ -11,8 +11,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 <script src="config.js"></script>
-<script src="gas-mock.js"></script>
-<script src="demo-backend.js"></script>
 <script src="xlsx.full.min.js" defer></script>
 <style>
 /* Field-first layout: light, high-contrast surfaces readable outdoors; one green accent for actions; status carried by small coloured chips. */
@@ -194,7 +192,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand-2)
   <button class="hbtn" id="langBtn" type="button" aria-label="Language">EN | PT</button>
   <button class="hbtn hide-sm" id="whoBtn" type="button" hidden></button>
 </div></header>
-<div class="banner" id="demoBanner" hidden><div class="wrap" id="demoText"></div></div>
 <nav class="tabs" id="tabs" hidden><div class="in" id="tabsIn"></div></nav>
 <main class="wrap" id="main"></main>
 <div class="toast" id="toast" hidden></div>
@@ -215,8 +212,14 @@ function toast(t){ const el = $("#toast"); el.textContent = t; el.hidden = false
 
 // ---------- language
 const L = {
- en: {appSub:"Timesheets", signIn:"Sign in", yourName:"Your name", choose:"Choose your name", pin:"PIN", createPin:"Create your PIN (4 to 8 digits)", confirmPin:"Repeat PIN", firstTime:"First time here: choose a PIN you will remember. You will use it every time you sign in.",
-  wrongPin:"Wrong PIN. Try again.", locked:"Too many attempts. Wait 15 minutes, or ask Faruk to reset your PIN.", pinMismatch:"The two PINs do not match.", pinRule:"PIN must be 4 to 8 digits.", signOut:"Sign out", offline:"Offline", saved:"Saved", waiting:"waiting to sync",
+ en: {appSub:"Timesheets", noWorkEmailTitle:"No Blue Forest email yet?", noWorkEmailText:"{email} is not a Blue Forest address. If you do not have a Blue Forest email yet, choose your name to register.", noChoices:"Your name is not available. Ask Faruk to add you or to enter your email in Settings.", personalEmail:"personal email", workEmail:"Work email", next:"Continue", createAccount:"Create account", rememberUser:"You will use this username to sign in.", welcome:"Account created. Welcome!", forgotText:"Ask Faruk to reset your PIN in Settings. Then choose Create your account again and enter your work email.", defaultEmail:"username@blueforest.co", e_email_not_found:"Please enter the correct email.", e_already_registered:"This account already exists. Sign in with your username and PIN, or ask Faruk to reset your PIN.", e_email_in_use:"This email belongs to another person.", username:"Username", signupCta:"First time? Create your account", forgot:"Forgot PIN?", signupTitle:"Create your account", signupIntro:"Enter your Blue Forest email address. It must match the email on the staff list.", email:"Email",
+  yourUsername:"Your username", backToSignIn:"Back to sign in",
+  forgotTitle:"Forgot your PIN?", createPinTitle:"Create your PIN", hello:"Hello",
+  autoUser:"set automatically",
+  notConfigured:"The app is not connected to its database yet. Fill in config.js (see SETUP.md).",
+  e_invalid_email:"Enter a valid email address.", e_email_in_use:"This email is already used by another account.", e_unknown_user:"Username not found.", e_not_registered:"This account is not set up yet. Use Create your account first.",
+  e_invalid_pin:"PIN must be 4 to 8 digits.", e_username_taken:"That username is already taken.", e_name_required:"Name is required.", signIn:"Sign in", yourName:"Your name", choose:"Choose your name", pin:"PIN", createPin:"Create your PIN (4 to 8 letters or numbers)", confirmPin:"Repeat PIN", firstTime:"First time here: choose a PIN you will remember. You will use it every time you sign in.",
+  wrongPin:"Wrong PIN. Try again.", locked:"Too many attempts. Wait 15 minutes, or ask Faruk to reset your PIN.", pinMismatch:"The two PINs do not match.", pinRule:"PIN must be 4 to 8 letters or numbers.", signOut:"Sign out", offline:"Offline", saved:"Saved", waiting:"waiting to sync",
   today:"Today", day:"Day", period:"Period", feed:"Messages", account:"Account", team:"Team", entries:"Entries", flags:"Flags", myDay:"My day", settings:"Settings",
   addEntry:"Add entry", editEntry:"Edit entry", copyPrev:"Copy previous day", workType:"Work type", area:"Activity area", activity:"Activity", location:"Location", summary:"Summary of tasks performed / results achieved", save:"Save", cancel:"Cancel", del:"Delete", optional:"optional",
   pickArea:"Choose an area", pickActivity:"Choose (optional)", otherAct:"Other (describe in summary)", needWT:"Choose a work type.", needArea:"Choose an activity area.", needSum:"Write a short summary of what you did.",
@@ -230,8 +233,14 @@ const L = {
   lists:"Lists", workTypes:"Work types", countsWork:"Counts as working day", areasActs:"Activity areas and activities (one per line)", addType:"Add work type", addArea:"Add area", saveLists:"Save lists", listsSaved:"Lists saved.", staffSaved:"Saved.",
   demo:"Demo mode: data stays on this device only. Faruk's demo PIN is 1234. Connect Supabase (see the setup guide) to share timesheets.", netErr:"Could not reach the server. Your entries are kept on this phone and will sync later.", needOnline:"This needs an internet connection.", signedOut:"Your session ended. Please sign in again.",
   back:"Back", periodOverview:"Period overview", entriesIn:"entries", flagFor:"Flag", details:"Details", wd:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], wdLong:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"], months:["January","February","March","April","May","June","July","August","September","October","November","December"]},
- pt: {appSub:"Folhas de horas", signIn:"Entrar", yourName:"O seu nome", choose:"Escolha o seu nome", pin:"PIN", createPin:"Crie o seu PIN (4 a 8 dígitos)", confirmPin:"Repita o PIN", firstTime:"Primeira vez: escolha um PIN que vai lembrar. Vai usá-lo sempre que entrar.",
-  wrongPin:"PIN errado. Tente outra vez.", locked:"Demasiadas tentativas. Aguarde 15 minutos ou peça ao Faruk para repor o seu PIN.", pinMismatch:"Os dois PINs não coincidem.", pinRule:"O PIN deve ter 4 a 8 dígitos.", signOut:"Sair", offline:"Sem rede", saved:"Guardado", waiting:"por sincronizar",
+ pt: {appSub:"Folhas de horas", noWorkEmailTitle:"Ainda sem email da Blue Forest?", noWorkEmailText:"{email} não é um endereço da Blue Forest. Se ainda não tem email da Blue Forest, escolha o seu nome para se registar.", noChoices:"O seu nome não está disponível. Peça ao Faruk para o adicionar ou para inserir o seu email nas Definições.", personalEmail:"email pessoal", workEmail:"Email de trabalho", next:"Continuar", createAccount:"Criar conta", rememberUser:"Vai usar este nome de utilizador para entrar.", welcome:"Conta criada. Bem-vindo!", forgotText:"Peça ao Faruk para repor o seu PIN nas Definições. Depois escolha Criar conta outra vez e escreva o seu email de trabalho.", defaultEmail:"utilizador@blueforest.co", e_email_not_found:"Por favor, introduza o email correcto.", e_already_registered:"Esta conta já existe. Entre com o seu nome de utilizador e PIN, ou peça ao Faruk para repor o seu PIN.", e_email_in_use:"Este email pertence a outra pessoa.", username:"Nome de utilizador", signupCta:"Primeira vez? Crie a sua conta", forgot:"Esqueceu o PIN?", signupTitle:"Criar conta", signupIntro:"Escreva o seu email da Blue Forest. Tem de coincidir com o email da lista de pessoal.", email:"Email",
+  yourUsername:"O seu nome de utilizador", backToSignIn:"Voltar a entrar",
+  forgotTitle:"Esqueceu o PIN?", createPinTitle:"Crie o seu PIN", hello:"Olá",
+  autoUser:"definido automaticamente",
+  notConfigured:"A aplicação ainda não está ligada à base de dados. Preencha o config.js (ver SETUP.md).",
+  e_invalid_email:"Escreva um email válido.", e_email_in_use:"Este email já é usado por outra conta.", e_unknown_user:"Nome de utilizador não encontrado.", e_not_registered:"Esta conta ainda não está criada. Use primeiro Criar conta.",
+  e_invalid_pin:"O PIN deve ter 4 a 8 dígitos.", e_username_taken:"Esse nome de utilizador já existe.", e_name_required:"O nome é obrigatório.", signIn:"Entrar", yourName:"O seu nome", choose:"Escolha o seu nome", pin:"PIN", createPin:"Crie o seu PIN (4 a 8 letras ou números)", confirmPin:"Repita o PIN", firstTime:"Primeira vez: escolha um PIN que vai lembrar. Vai usá-lo sempre que entrar.",
+  wrongPin:"PIN errado. Tente outra vez.", locked:"Demasiadas tentativas. Aguarde 15 minutos ou peça ao Faruk para repor o seu PIN.", pinMismatch:"Os dois PINs não coincidem.", pinRule:"O PIN deve ter 4 a 8 letras ou números.", signOut:"Sair", offline:"Sem rede", saved:"Guardado", waiting:"por sincronizar",
   today:"Hoje", day:"Dia", period:"Período", feed:"Mensagens", account:"Conta", team:"Equipa", entries:"Registos", flags:"Pedidos", myDay:"O meu dia", settings:"Definições",
   addEntry:"Adicionar registo", editEntry:"Editar registo", copyPrev:"Copiar dia anterior", workType:"Tipo de trabalho", area:"Área de actividade", activity:"Actividade", location:"Local", summary:"Resumo das tarefas realizadas / resultados alcançados", save:"Guardar", cancel:"Cancelar", del:"Apagar", optional:"opcional",
   pickArea:"Escolha uma área", pickActivity:"Escolha (opcional)", otherAct:"Outra (descreva no resumo)", needWT:"Escolha o tipo de trabalho.", needArea:"Escolha a área de actividade.", needSum:"Escreva um breve resumo do que fez.",
@@ -252,26 +261,15 @@ const fmtDay = s => { const d = dt(s); return t("wdLong")[d.getDay()] + ", " + d
 const fmtShort = s => { const d = dt(s); return d.getDate() + " " + t("months")[d.getMonth()].slice(0, 3); };
 const fmtLong = s => { const d = dt(s); return d.getDate() + " " + t("months")[d.getMonth()] + " " + d.getFullYear(); };
 
-// ---------- backend (Supabase: one database function, ts_api; demo mode runs a local copy in the browser)
+// ---------- backend: Supabase (one database function, ts_api)
 const CFG = window.TS_CONFIG || {};
 const params = new URLSearchParams(location.search);
 const SB_URL = (params.get("sbUrl") || CFG.supabaseUrl || "").replace(/\/+$/, "");
 const SB_KEY = params.get("sbKey") || CFG.supabaseKey || "";
-const DEMO = !(SB_URL && SB_KEY);
-let demo = null;
-function demoBackend(){
-  if (demo) return demo;
-  let mem = null;
-  const env = GasMock.makeEnv({load: () => mem || store.get("ts-demo-db", null), save: d => { mem = d; store.set("ts-demo-db", d); }});
-  demo = window.TS_GAS(env.SpreadsheetApp, env.ContentService, env.Utilities, env.PropertiesService, env.LockService, env.CacheService, env.Session);
-  if (!store.get("ts-demo-ready", false)){ demo.setupWith_("1234"); store.set("ts-demo-ready", true); }
-  return demo;
-}
-async function call(req){
-  if (DEMO){ const b = demoBackend(); return JSON.parse(b.doPost({postData:{contents: JSON.stringify(req)}}).getContent()); }
-  const headers = {"Content-Type": "application/json", "apikey": SB_KEY};
-  if (SB_KEY.startsWith("eyJ")) headers.Authorization = "Bearer " + SB_KEY;   // legacy anon key (JWT); new publishable keys go in apikey only
-  const r = await fetch(SB_URL + "/rest/v1/rpc/ts_api", {method:"POST", headers, body: JSON.stringify({req})});
+const CONFIGURED = !!(SB_URL && SB_KEY);
+function sbHeaders(bearer){ const h = {"Content-Type": "application/json", "apikey": SB_KEY}; if (bearer) h.Authorization = "Bearer " + bearer; else if (SB_KEY.startsWith("eyJ")) h.Authorization = "Bearer " + SB_KEY; return h; }   // legacy anon keys are JWTs; publishable keys go in apikey only
+async function call(req, bearer){
+  const r = await fetch(SB_URL + "/rest/v1/rpc/ts_api", {method:"POST", headers: sbHeaders(bearer), body: JSON.stringify({req})});
   if (!r.ok) throw new Error("http_" + r.status);
   return await r.json();
 }
@@ -322,8 +320,8 @@ function periodStats(start, list){
 function setSync(){
   const el = $("#sync"); if (!S.session){ el.hidden = true; return; }
   el.hidden = false; const n = S.outbox.length;
-  el.className = "sync" + (!S.online && !DEMO ? " off" : n ? " pending" : "");
-  el.textContent = !S.online && !DEMO ? t("offline") + (n ? " · " + n : "") : n ? n + " " + t("waiting") : t("saved");
+  el.className = "sync" + (!S.online ? " off" : n ? " pending" : "");
+  el.textContent = !S.online ? t("offline") + (n ? " · " + n : "") : n ? n + " " + t("waiting") : t("saved");
 }
 let flushing = false;
 async function flush(){
@@ -357,52 +355,101 @@ window.addEventListener("online", () => { S.online = true; flush(); loadMine(); 
 window.addEventListener("offline", () => { S.online = false; setSync(); });
 setInterval(() => { if (S.session && S.outbox.length) flush(); }, 60000);
 
-// ---------- sign in / out
+// ---------- sign in and sign up
+function shell(inner){
+  return `<div class="login"><div class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="var(--wash)"/><path d="M20 7c-5 4-7 8-7 12 0 3 2 5 7 5s7-2 7-5c0-4-2-8-7-12z" fill="var(--brand-2)"/><path d="M20 24v9M20 27c-3 1-5 3-6 6M20 27c3 1 5 3 6 6" stroke="var(--brand)" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg><div><h1>MozBlue</h1><div class="muted">${esc(t("appSub"))} · Blue Forest</div></div></div>${inner}</div>`;
+}
+const PIN_RE = /^[A-Za-z0-9]{4,8}$/;
+const pinInput = (id, ac) => `<input id="${id}" class="pin" type="password" autocomplete="${ac}" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="8" required>`;
+const errText = code => t("e_" + code) !== "e_" + code ? t("e_" + code) : (code === "wrong_pin" ? t("wrongPin") : code === "locked" ? t("locked") : t("netErr"));
+function preAuth(){ $("#tabs").hidden = true; $("#whoBtn").hidden = true; setSync(); }
 async function boot(){
   $("#langBtn").textContent = lang === "pt" ? "PT | EN" : "EN | PT"; document.documentElement.lang = lang;
   $("#brandSub").textContent = t("appSub");
-  $("#demoBanner").hidden = !DEMO; $("#demoText").textContent = t("demo");
+  if (!CONFIGURED){ preAuth(); $("#main").innerHTML = shell(`<div class="card">${esc(t("notConfigured"))}</div>`); return; }
   if (S.session){
     const c = store.get(cacheKey(), null); if (c){ S.entries = c.entries || []; S.flags = c.flags || []; S.lists = c.lists; S.me = c.me; S.staff = c.staff || []; }
     S.outbox = store.get(outKey(), []);
     S.tab = S.tab || (isAdmin() ? "team" : "day"); render(); loadMine();
-    try { const b = await call({action:"bootstrap"}); if (b.ok){ S.staff = b.staff; S.lists = S.lists || b.lists; persist(); } } catch(e){}
     return;
   }
   renderLogin();
-  try { const b = await call({action:"bootstrap"}); if (b.ok){ S.staff = b.staff; S.lists = b.lists; S.today = b.today || S.today; store.set("ts-staff", b.staff); renderLogin(); } }
-  catch(e){ S.staff = store.get("ts-staff", []); renderLogin(t("netErr")); }
+  try { const b = await call({action:"bootstrap"}); if (b.ok){ S.lists = b.lists; S.today = b.today || S.today; } } catch(e){}
+}
+function startSession(res){
+  S.session = {staffId: res.me.id, token: res.token, role: res.me.role, name: res.me.name, username: res.me.username}; store.set("ts-session", S.session);
+  store.set("ts-last-username", res.me.username || ""); S.me = res.me; S.tab = isAdmin() ? "team" : "day"; S.date = S.today; boot();
 }
 function renderLogin(msg){
-  $("#tabs").hidden = true; $("#whoBtn").hidden = true; setSync();
-  const sel = store.get("ts-last-user", ""), person = S.staff.find(s => s.id === sel);
-  const first = person && !person.hasPin;
-  $("#main").innerHTML = `<div class="login"><div class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="var(--wash)"/><path d="M20 7c-5 4-7 8-7 12 0 3 2 5 7 5s7-2 7-5c0-4-2-8-7-12z" fill="var(--brand-2)"/><path d="M20 24v9M20 27c-3 1-5 3-6 6M20 27c3 1 5 3 6 6" stroke="var(--brand)" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg><div><h1>MozBlue</h1><div class="muted">${esc(t("appSub"))} · Blue Forest</div></div></div>
-    <form class="card" id="loginForm" autocomplete="off" style="display:flex;flex-direction:column;gap:14px">
-      <label class="f">${esc(t("yourName"))}<select id="lgWho" required><option value="">${esc(t("choose"))}</option>${S.staff.filter(s => s.active !== false).map(s => `<option value="${esc(s.id)}"${s.id === sel ? " selected" : ""}>${esc(s.name)}</option>`).join("")}</select></label>
-      ${first ? `<p class="small muted" style="margin:0">${esc(t("firstTime"))}</p>
-        <label class="f">${esc(t("createPin"))}<input id="lgPin" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" required></label>
-        <label class="f">${esc(t("confirmPin"))}<input id="lgPin2" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" required></label>`
-      : `<label class="f">${esc(t("pin"))}<input id="lgPin" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" required></label>`}
+  preAuth(); S.pre = "login";
+  $("#main").innerHTML = shell(`<form class="card" id="loginForm" autocomplete="on" style="display:flex;flex-direction:column;gap:14px">
+      <label class="f">${esc(t("username"))}<input id="lgUser" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" value="${esc(store.get("ts-last-username", ""))}" required></label>
+      <label class="f">${esc(t("pin"))}${pinInput("lgPin", "current-password")}</label>
       <p class="small" id="lgMsg" style="margin:0;color:var(--bad)">${esc(msg || "")}</p>
       <button class="btn primary" type="submit">${esc(t("signIn"))}</button>
-    </form></div>`;
-  $("#lgWho").onchange = () => { store.set("ts-last-user", $("#lgWho").value); renderLogin(); };
+      <div class="row" style="justify-content:space-between"><a href="#" data-act="toSignup">${esc(t("signupCta"))}</a><a href="#" data-act="toForgot">${esc(t("forgot"))}</a></div>
+    </form>`);
+  if (!$("#lgUser").value) $("#lgUser").focus(); else $("#lgPin").focus();
   $("#loginForm").onsubmit = async ev => {
-    ev.preventDefault(); const who = $("#lgWho").value, pin = $("#lgPin").value.trim(); if (!who) return;
-    const p = S.staff.find(s => s.id === who), msgEl = $("#lgMsg");
-    if (!/^\d{4,8}$/.test(pin)){ msgEl.textContent = t("pinRule"); return; }
-    if (p && !p.hasPin && pin !== $("#lgPin2").value.trim()){ msgEl.textContent = t("pinMismatch"); return; }
-    try {
-      const res = await call(p && !p.hasPin ? {action:"login", staffId: who, newPin: pin} : {action:"login", staffId: who, pin});
-      if (!res.ok){
-        if (res.error === "pin_already_set"){ p.hasPin = true; renderLogin(); return; }
-        if (res.error === "pin_not_set"){ p.hasPin = false; renderLogin(); return; }
-        msgEl.textContent = res.error === "locked" ? t("locked") : t("wrongPin"); return; }
-      S.session = {staffId: who, token: res.token, role: res.me.role, name: res.me.name}; store.set("ts-session", S.session); store.set("ts-last-user", who);
-      S.me = res.me; S.tab = isAdmin() ? "team" : "day"; S.date = S.today; boot();
-    } catch(e){ msgEl.textContent = t("netErr"); }
+    ev.preventDefault(); const u = $("#lgUser").value.trim().toLowerCase(), pin = $("#lgPin").value.trim(), msgEl = $("#lgMsg");
+    if (!PIN_RE.test(pin)){ msgEl.textContent = t("pinRule"); return; }
+    try { const res = await call({action:"login", username: u, pin}); if (!res.ok){ msgEl.textContent = errText(res.error); return; } startSession(res); }
+    catch(e){ msgEl.textContent = t("netErr"); }
   };
+}
+// Step 1: work email must match a staff member. Step 2: choose and confirm a PIN.
+function renderSignup(found){
+  preAuth(); S.pre = "signup"; S.signup = found || null;
+  if (!found){
+    $("#main").innerHTML = shell(`<form class="card" id="suForm" style="display:flex;flex-direction:column;gap:14px"><h3>${esc(t("signupTitle"))}</h3><p class="small muted" style="margin:0">${esc(t("signupIntro"))}</p>
+        <label class="f">${esc(t("workEmail"))}<input id="suEmail" type="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="name@blueforest.co" required></label>
+        <p class="small" id="suMsg" style="margin:0;color:var(--bad)"></p>
+        <button class="btn primary" type="submit">${esc(t("next"))}</button><a href="#" data-act="toLogin">${esc(t("backToSignIn"))}</a></form>`);
+    $("#suEmail").focus();
+    $("#suForm").onsubmit = async ev => {
+      ev.preventDefault(); const email = $("#suEmail").value.trim().toLowerCase(), msgEl = $("#suMsg");
+      try {
+        const r = await call({action:"signupCheck", email});
+        if (!r.ok && r.error === "no_work_email"){ renderPickName(email, r.choices || []); return; }
+        if (!r.ok){ msgEl.textContent = errText(r.error); return; }
+        renderSignup({email, name: r.name, username: r.username});
+      } catch(e){ msgEl.textContent = t("netErr"); }
+    };
+    return;
+  }
+  $("#main").innerHTML = shell(`<form class="card" id="suPinForm" style="display:flex;flex-direction:column;gap:14px"><h3>${esc(t("createPinTitle"))}</h3>
+      <p style="margin:0">${esc(t("hello"))} ${esc(found.name.split(" ")[0])}.</p>
+      <div class="card" style="box-shadow:none;background:var(--wash);margin:0"><div class="small muted">${esc(t("yourUsername"))}</div><div class="mono" style="font-size:20px;color:var(--ink)">${esc(found.username)}</div><div class="small muted" style="margin-top:4px">${esc(t("rememberUser"))}</div></div>
+      <label class="f">${esc(t("createPin"))}${pinInput("suPin", "new-password")}</label>
+      <label class="f">${esc(t("confirmPin"))}${pinInput("suPin2", "new-password")}</label>
+      <p class="small" id="suMsg" style="margin:0;color:var(--bad)"></p>
+      <button class="btn primary" type="submit">${esc(t("createAccount"))}</button><a href="#" data-act="toSignup">${esc(t("back"))}</a></form>`);
+  $("#suPin").focus();
+  $("#suPinForm").onsubmit = async ev => {
+    ev.preventDefault(); const p1 = $("#suPin").value.trim(), p2 = $("#suPin2").value.trim(), msgEl = $("#suMsg");
+    if (!PIN_RE.test(p1)){ msgEl.textContent = t("pinRule"); return; } if (p1 !== p2){ msgEl.textContent = t("pinMismatch"); return; }
+    try { const r = await call({action:"signupComplete", email: found.email, newPin: p1, staffId: found.staffId || ""}); if (!r.ok){ msgEl.textContent = errText(r.error); return; } toast(t("welcome")); startSession(r); }
+    catch(e){ msgEl.textContent = t("netErr"); }
+  };
+}
+// No Blue Forest email yet: choose your name from the people who have not registered.
+function renderPickName(email, choices){
+  preAuth(); S.pre = "pick"; S.pick = {email, choices};
+  $("#main").innerHTML = shell(`<form class="card" id="pkForm" style="display:flex;flex-direction:column;gap:14px"><h3>${esc(t("noWorkEmailTitle"))}</h3>
+      <p class="small muted" style="margin:0">${esc(t("noWorkEmailText").replace("{email}", email))}</p>
+      ${choices.length ? `<label class="f">${esc(t("yourName"))}<select id="pkWho" required><option value="">${esc(t("choose"))}</option>${choices.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join("")}</select></label>
+      <p class="small" id="pkMsg" style="margin:0;color:var(--bad)"></p><button class="btn primary" type="submit">${esc(t("next"))}</button>` : `<p style="margin:0;color:var(--bad)">${esc(t("noChoices"))}</p>`}
+      <a href="#" data-act="toSignup">${esc(t("back"))}</a></form>`);
+  if (!choices.length) return;
+  $("#pkForm").onsubmit = async ev => {
+    ev.preventDefault(); const id = $("#pkWho").value, msgEl = $("#pkMsg"); if (!id) return;
+    try { const r = await call({action:"signupCheck", email, staffId: id}); if (!r.ok){ msgEl.textContent = errText(r.error); return; } renderSignup({email, staffId: id, name: r.name, username: r.username}); }
+    catch(e){ msgEl.textContent = t("netErr"); }
+  };
+}
+function renderForgot(){
+  preAuth(); S.pre = "forgot";
+  $("#main").innerHTML = shell(`<div class="card" style="display:flex;flex-direction:column;gap:12px"><h3>${esc(t("forgotTitle"))}</h3><p style="margin:0">${esc(t("forgotText"))}</p><a href="#" data-act="toLogin">${esc(t("backToSignIn"))}</a></div>`);
 }
 function signOut(force){ if (!force && S.session && S.outbox.length){ toast(S.outbox.length + " " + t("unsynced")); flush(); return; } store.del("ts-session"); S.session = null; S.entries = []; S.flags = []; S.team = null; S.tab = null; boot(); }
 
@@ -420,7 +467,7 @@ function renderTabs(){
   $("#tabsIn").innerHTML = tabs.map(([k,l,b]) => `<button type="button" data-tab="${k}" aria-current="${S.tab === k || (k === "day" && S.tab === "period" && isAdmin()) || (k === "team" && S.tab === "person") ? "page" : "false"}"><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[k === "day" && isAdmin() ? "day" : k]}</svg><span>${esc(l)}</span>${b ? `<span class="badge">${b}</span>` : ""}</button>`).join("");
   $("#tabs").hidden = false;
   $$("#tabsIn [data-tab]").forEach(b => b.onclick = () => { S.tab = b.dataset.tab; S.edit = null; S.composing = null; if (S.tab === "day") S.date = S.date || S.today; render(); window.scrollTo(0,0); });
-  $("#whoBtn").hidden = false; $("#whoBtn").textContent = (S.session.name || "") + " · " + t("signOut");
+  $("#whoBtn").hidden = false; $("#whoBtn").textContent = (S.session.username || S.session.name || "") + " · " + t("signOut");
 }
 
 // ---------- render
@@ -521,13 +568,15 @@ function renderFeed(){
 // ---------- staff: account
 function renderAccount(){
   const me = S.me || {};
-  $("#main").innerHTML = `<h1 class="pt">${esc(me.name || S.session.name)}</h1><p class="sub">${esc([me.position, me.station].filter(Boolean).join(" · "))}${me.lineManager ? " · " + esc(t("lineManager")) + ": " + esc(me.lineManager) : ""}</p>
-    ${pinCard()}<div class="card"><button class="btn danger" data-act="signOut">${esc(t("signOut"))}</button></div>`;
-  wirePin();
+  $("#main").innerHTML = `<h1 class="pt">${esc(me.name || S.session.name)}</h1><p class="sub">${esc(t("username"))}: <span class="mono">${esc(me.username || S.session.username || "")}</span> · ${esc([me.position, me.station].filter(Boolean).join(" · "))}${me.lineManager ? " · " + esc(t("lineManager")) + ": " + esc(me.lineManager) : ""}</p>
+    ${emailCard()}${pinCard()}<div class="card"><button class="btn danger" data-act="signOut">${esc(t("signOut"))}</button></div>`;
+  wirePin(); wireEmail();
 }
-function pinCard(){ return `<form class="card" id="pinForm" style="display:flex;flex-direction:column;gap:12px"><h3>${esc(t("changePin"))}</h3><div class="g2"><label class="f">${esc(t("oldPin"))}<input id="pOld" class="pin" type="password" inputmode="numeric" maxlength="8"></label><label class="f">${esc(t("newPin"))}<input id="pNew" class="pin" type="password" inputmode="numeric" maxlength="8"></label></div><p class="small" id="pMsg" style="margin:0;color:var(--bad)"></p><div><button class="btn" type="submit">${esc(t("changePin"))}</button></div></form>`; }
+function emailCard(){ const me = S.me || {}; return me.email ? `<div class="card"><h3>${esc(t("workEmail"))}</h3><div>${esc(me.email)}</div></div>` : ""; }
+function wireEmail(){}
+function pinCard(){ return `<form class="card" id="pinForm" style="display:flex;flex-direction:column;gap:12px"><h3>${esc(t("changePin"))}</h3><div class="g2"><label class="f">${esc(t("oldPin"))}<input id="pOld" class="pin" type="password" autocapitalize="none" autocomplete="current-password" maxlength="8"></label><label class="f">${esc(t("newPin"))}<input id="pNew" class="pin" type="password" autocapitalize="none" autocomplete="new-password" maxlength="8"></label></div><p class="small" id="pMsg" style="margin:0;color:var(--bad)"></p><div><button class="btn" type="submit">${esc(t("changePin"))}</button></div></form>`; }
 function wirePin(){ $("#pinForm").onsubmit = async ev => { ev.preventDefault(); const o = $("#pOld").value.trim(), n = $("#pNew").value.trim();
-  if (!/^\d{4,8}$/.test(n)){ $("#pMsg").textContent = t("pinRule"); return; }
+  if (!PIN_RE.test(n)){ $("#pMsg").textContent = t("pinRule"); return; }
   try { const r = await authed("changePin", {oldPin: o, newPin: n}); if (!r.ok){ $("#pMsg").textContent = t("wrongPin"); return; } S.session.token = r.token; store.set("ts-session", S.session); toast(t("pinChanged")); render(); } catch(e){ $("#pMsg").textContent = t("needOnline"); } }; }
 
 // ---------- Project Director: team
@@ -610,16 +659,16 @@ async function renderSettings(){
   let staff = S.team ? S.team.staff : S.staff;
   $("#main").innerHTML = `<h1 class="pt">${esc(t("settings"))}</h1>
     <div class="card"><div class="row" style="justify-content:space-between"><h3>${esc(t("staffList"))}</h3><button class="btn sm" data-act="newStaff">+ ${esc(t("addStaff"))}</button></div>
-      ${ed ? staffForm(ed) : ""}<div id="staffRows">${staff.map(s => `<div class="srow"><span><b>${esc(s.name)}</b> ${s.role === "admin" ? `<span class="chip info">${esc(t("roleAdmin").split(" (")[0])}</span>` : ""}${s.active === false ? ` <span class="chip mute">off</span>` : ""}<div class="small muted">${esc([s.position, s.station, s.lineManager && (t("lineManager") + ": " + s.lineManager)].filter(Boolean).join(" · "))} · ${esc(s.hasPin ? t("hasPin") : t("noPin"))}</div></span><span class="row" style="gap:6px"><button class="btn sm" data-act="editStaff" data-id="${esc(s.id)}">${esc(t("editEntry").split(" ")[0])}</button>${s.hasPin ? `<button class="btn sm ghost" data-act="resetPin" data-id="${esc(s.id)}">${esc(t("resetPin"))}</button>` : ""}</span></div>`).join("")}</div></div>
+      ${ed ? staffForm(ed) : ""}<div id="staffRows">${staff.map(s => `<div class="srow"><span><b>${esc(s.name)}</b> ${s.role === "admin" ? `<span class="chip info">${esc(t("roleAdmin").split(" (")[0])}</span>` : ""}${s.active === false ? ` <span class="chip mute">off</span>` : ""}<div class="small muted"><span class="mono">${esc(s.username || "")}</span> · ${esc(s.email || "")}${s.emailExternal ? ` <span class="chip warn">${esc(t("personalEmail"))}</span>` : ""} · ${esc(s.hasPin ? t("hasPin") : t("noPin"))}</div><div class="small muted">${esc([s.position, s.station, s.lineManager && (t("lineManager") + ": " + s.lineManager)].filter(Boolean).join(" · "))}</div></span><span class="row" style="gap:6px"><button class="btn sm" data-act="editStaff" data-id="${esc(s.id)}">${esc(t("editEntry").split(" ")[0])}</button>${s.hasPin ? `<button class="btn sm ghost" data-act="resetPin" data-id="${esc(s.id)}">${esc(t("resetPin"))}</button>` : ""}</span></div>`).join("")}</div></div>
     <div class="card listedit"><h3>${esc(t("workTypes"))}</h3><div id="wtRows">${L2.workTypes.map((w,i) => `<div class="wtrow"><input data-wt="${i}" value="${esc(w.name)}"><label><input type="checkbox" data-wtw="${i}"${w.working ? " checked" : ""}> ${esc(t("countsWork"))}</label><button class="x" data-act="delWT" data-i="${i}" aria-label="Remove">×</button></div>`).join("")}</div><button class="btn sm" data-act="addWT">+ ${esc(t("addType"))}</button>
       <h3 style="margin-top:18px">${esc(t("areasActs"))}</h3><div id="areaRows">${L2.areas.map((a,i) => `<div class="card" style="box-shadow:none;margin-bottom:8px"><div class="wtrow" style="grid-template-columns:minmax(0,1fr) 32px"><input data-an="${i}" value="${esc(a.name)}"><button class="x" data-act="delArea" data-i="${i}" aria-label="Remove">×</button></div><textarea data-aa="${i}">${esc(a.activities.join("\n"))}</textarea></div>`).join("")}</div>
       <div class="row"><button class="btn sm" data-act="addArea">+ ${esc(t("addArea"))}</button><span class="grow"></span><button class="btn primary" data-act="saveLists">${esc(t("saveLists"))}</button></div></div>
-    ${pinCard()}<div class="card"><button class="btn danger" data-act="signOut">${esc(t("signOut"))}</button></div>`;
-  wirePin();
+    ${emailCard()}${pinCard()}<div class="card"><button class="btn danger" data-act="signOut">${esc(t("signOut"))}</button></div>`;
+  wirePin(); wireEmail();
   if (!S.team){ try { await loadTeam(S.pStart || periodStart(S.today)); if (S.tab === "settings") renderSettings(); } catch(e){} }
 }
 function staffForm(s){
-  return `<form class="card" id="staffForm" style="box-shadow:none;display:flex;flex-direction:column;gap:10px;background:var(--wash)"><div class="g2"><label class="f">${esc(t("name"))}<input id="sName" value="${esc(s.name || "")}" required></label><label class="f">${esc(t("position"))}<input id="sPos" value="${esc(s.position || "")}"></label><label class="f">${esc(t("station"))}<input id="sSt" value="${esc(s.station || "")}"></label><label class="f">${esc(t("lineManager"))}<input id="sLM" value="${esc(s.lineManager || "")}"></label>
+  return `<form class="card" id="staffForm" style="box-shadow:none;display:flex;flex-direction:column;gap:10px;background:var(--wash)"><div class="g2"><label class="f">${esc(t("name"))}<input id="sName" value="${esc(s.name || "")}" required></label><label class="f">${esc(t("position"))}<input id="sPos" value="${esc(s.position || "")}"></label><label class="f">${esc(t("station"))}<input id="sSt" value="${esc(s.station || "")}"></label><label class="f">${esc(t("lineManager"))}<input id="sLM" value="${esc(s.lineManager || "")}"></label><label class="f">${esc(t("username"))}<input id="sUser" value="${esc(s.username || "")}" autocapitalize="none" placeholder="${esc(t("autoUser"))}"></label><label class="f">${esc(t("workEmail"))}<input id="sEmail" type="email" value="${esc(s.emailCustom ? s.email : "")}" autocapitalize="none" placeholder="${esc(s.email || t("defaultEmail"))}"></label>
     <label class="f">${esc(t("role"))}<select id="sRole"><option value="staff"${s.role !== "admin" ? " selected" : ""}>${esc(t("roleStaff"))}</option><option value="admin"${s.role === "admin" ? " selected" : ""}>${esc(t("roleAdmin"))}</option></select></label><label class="f">${esc(t("active"))}<select id="sAct"><option value="1"${s.active !== false ? " selected" : ""}>✓</option><option value="0"${s.active === false ? " selected" : ""}>—</option></select></label></div>
     <div class="row"><button class="btn primary" type="submit">${esc(t("save"))}</button><button class="btn" type="button" data-act="cancelStaff">${esc(t("cancel"))}</button></div></form>`;
 }
@@ -676,6 +725,7 @@ const fileStamp = start => "Timesheet_BlueForest_MozBlue_" + L.en.months[dt(star
 
 // ---------- actions
 const ACT = {
+  toSignup: () => renderSignup(), toForgot: () => renderForgot(), toLogin: () => renderLogin(),
   tab: el => { S.tab = el.dataset.v; S.edit = null; S.composing = null; render(); window.scrollTo(0,0); },
   shiftDay: el => { S.date = addDays(S.date || S.today, +el.dataset.n); S.edit = null; render(); },
   goToday: () => { S.date = S.today; S.edit = null; render(); },
@@ -718,10 +768,11 @@ async function flagStatus(id, reopen){ try { const r = await authed("resolveFlag
 document.addEventListener("click", ev => { const el = ev.target.closest("[data-act]"); if (!el || !ACT[el.dataset.act]) return; if (el.tagName === "A") ev.preventDefault(); ACT[el.dataset.act](el); });
 document.addEventListener("submit", async ev => {
   if (ev.target.id !== "staffForm") return; ev.preventDefault();
-  const s = {...S.editStaff, name: $("#sName").value.trim(), position: $("#sPos").value.trim(), station: $("#sSt").value.trim(), lineManager: $("#sLM").value.trim(), role: $("#sRole").value, active: $("#sAct").value === "1"};
-  try { const r = await authed("saveStaff", {staff: s}); if (r.ok){ toast(t("staffSaved")); S.editStaff = null; S.team = null; await loadTeam(S.pStart || periodStart(S.today), true); renderSettings(); } else toast(r.error); } catch(e){ toast(t("needOnline")); }
+  const s = {...S.editStaff, name: $("#sName").value.trim(), position: $("#sPos").value.trim(), station: $("#sSt").value.trim(), lineManager: $("#sLM").value.trim(), username: $("#sUser").value.trim().toLowerCase(), email: $("#sEmail").value.trim().toLowerCase(), role: $("#sRole").value, active: $("#sAct").value === "1"};
+  try { const r = await authed("saveStaff", {staff: s}); if (r.ok){ toast(t("staffSaved")); S.editStaff = null; S.team = null; await loadTeam(S.pStart || periodStart(S.today), true); renderSettings(); } else toast(errText(r.error)); } catch(e){ toast(t("needOnline")); }
 });
-$("#langBtn").onclick = () => { lang = lang === "en" ? "pt" : "en"; store.set("ts-lang", lang); $("#langBtn").textContent = lang === "pt" ? "PT | EN" : "EN | PT"; document.documentElement.lang = lang; $("#brandSub").textContent = t("appSub"); $("#demoText").textContent = t("demo"); render(); };
+$("#langBtn").onclick = () => { lang = lang === "en" ? "pt" : "en"; store.set("ts-lang", lang); $("#langBtn").textContent = lang === "pt" ? "PT | EN" : "EN | PT"; document.documentElement.lang = lang; $("#brandSub").textContent = t("appSub");
+  if (S.session) render(); else if (S.pre === "signup") renderSignup(S.signup); else if (S.pre === "pick") renderPickName(S.pick.email, S.pick.choices); else if (S.pre === "forgot") renderForgot(); else if (S.pre === "login" || !S.pre) renderLogin(); };
 $("#whoBtn").onclick = () => signOut();
 
 boot();
