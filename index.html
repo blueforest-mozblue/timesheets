@@ -6,7 +6,7 @@
 <title>MozBlue Timesheets</title>
 <meta name="theme-color" content="#1f5f45">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon-192.png">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="alternate icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -40,7 +40,7 @@ a{color:var(--brand);text-underline-offset:2px}
 header.top{position:sticky;top:0;z-index:10;background:var(--brand);color:#fff;padding-top:env(safe-area-inset-top,0px)}
 header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
 .brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
-.brand svg{width:30px;height:30px;flex:none}
+.brand svg{width:34px;height:34px;flex:none}
 .brand b{font-family:var(--font-display);font-weight:600;font-size:19px;line-height:1;display:block}
 .brand small{font-family:var(--font-display);font-size:10px;letter-spacing:.24em;text-transform:uppercase;opacity:.8;display:block;margin-top:3px}
 .hbtn{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#fff;border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;white-space:nowrap}
@@ -84,7 +84,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand-2)
 /* login */
 .login{max-width:420px;margin:36px auto}
 .login .logo{display:flex;align-items:center;gap:12px;margin-bottom:18px}
-.login .logo svg{width:46px;height:46px}
+.login .logo svg{width:56px;height:56px;border-radius:14px;box-shadow:0 4px 14px rgba(31,95,69,.25)}
 .login h1{font-family:var(--font-display);font-size:26px;margin:0}
 .pin{font-family:var(--font-code);letter-spacing:.4em;font-size:22px;text-align:center}
 /* day */
@@ -182,12 +182,28 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand-2)
   nav.tabs .badge{position:static}
   .toast{bottom:28px}
 }
+.areaq{margin:12px 0 10px;padding:9px 12px;font-size:15px}
+.newarea{display:flex;gap:8px;align-items:center;margin:10px 0}
+.newarea input{padding:9px 12px;font-size:15px}
+.area{border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--card)}
+.area.open{border-color:var(--line-2)}
+.ahead{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;background:none;border:0;padding:12px 14px;cursor:pointer;text-align:left;color:var(--ink);font:inherit}
+.ahead .chev{font-size:20px;color:var(--faint);transition:transform .15s}
+.area.open .chev{transform:rotate(90deg)}
+.abody{padding:0 14px 14px;display:flex;flex-direction:column;gap:6px}
+.achips{display:flex;flex-wrap:wrap;gap:6px}
+.achip{display:inline-flex;align-items:center;gap:4px;background:var(--wash);color:var(--ink-2);border-radius:999px;padding:4px 4px 4px 11px;font-size:13px}
+.achip button{border:0;background:none;color:var(--faint);cursor:pointer;font-size:16px;line-height:1;width:22px;height:22px;border-radius:50%}
+.achip button:hover{color:var(--bad);background:var(--bad-wash)}
+.savebar{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:5;display:flex;align-items:center;gap:8px;background:var(--ink);color:var(--bg);padding:10px 12px 10px 16px;border-radius:14px;margin-bottom:12px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.savebar .btn{border-color:transparent}
+@media (min-width:900px){.savebar{bottom:16px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <header class="top"><div class="wrap">
-  <div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.5"/><path d="M20 7c-5 4-7 8-7 12 0 3 2 5 7 5s7-2 7-5c0-4-2-8-7-12z" fill="#9fe3bd"/><path d="M20 24v9M20 27c-3 1-5 3-6 6M20 27c3 1 5 3 6 6" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg><span><b>MozBlue</b><small id="brandSub">Timesheets</small></span></div>
+  <div class="brand"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="12" width="44" height="44" rx="8" fill="#f4faf6"/><path d="M10 22h44" stroke="#1f5f45" stroke-width="2.4"/><path d="M21 6v10M43 6v10" stroke="#9fe3bd" stroke-width="4" stroke-linecap="round"/><path d="M10 47c5-3.5 9-3.5 14.5 0s9.5 3.5 15 0 9.5-3.5 14.5 0v1a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8z" fill="#7fc8d6"/><path d="M32 46v-11M32 39c-3.5 1.2-6 3.5-7 7M32 39c3.5 1.2 6 3.5 7 7" fill="none" stroke="#1f5f45" stroke-width="2.4" stroke-linecap="round"/><ellipse cx="32" cy="31.5" rx="9" ry="5.5" fill="#2c7a5a"/></svg><span><b>MozBlue</b><small id="brandSub">Timesheets</small></span></div>
   <span class="sync" id="sync" hidden></span>
   <button class="hbtn" id="langBtn" type="button" aria-label="Language">EN | PT</button>
   <button class="hbtn hide-sm" id="whoBtn" type="button" hidden></button>
@@ -212,7 +228,7 @@ function toast(t){ const el = $("#toast"); el.textContent = t; el.hidden = false
 
 // ---------- language
 const L = {
- en: {appSub:"Timesheets", noWorkEmailTitle:"No Blue Forest email yet?", noWorkEmailText:"{email} is not a Blue Forest address. If you do not have a Blue Forest email yet, choose your name to register.", noChoices:"Your name is not available. Ask Faruk to add you or to enter your email in Settings.", personalEmail:"personal email", workEmail:"Work email", next:"Continue", createAccount:"Create account", rememberUser:"You will use this username to sign in.", welcome:"Account created. Welcome!", forgotText:"Ask Faruk to reset your PIN in Settings. Then choose Create your account again and enter your work email.", defaultEmail:"username@blueforest.co", e_email_not_found:"Please enter the correct email.", e_already_registered:"This account already exists. Sign in with your username and PIN, or ask Faruk to reset your PIN.", e_email_in_use:"This email belongs to another person.", username:"Username", signupCta:"First time? Create your account", forgot:"Forgot PIN?", signupTitle:"Create your account", signupIntro:"Enter your Blue Forest email address. It must match the email on the staff list.", email:"Email",
+ en: {appSub:"Timesheets", areasTitle:"Activity areas", newAreaName:"New activity area name", add:"Add", searchAreas:"Search areas and activities", unnamedArea:"(no name)", activitiesWord:"activities", noActivities:"No activities yet.", addActivity:"Add an activity to this area", areaName:"Area name", removeArea:"Remove area", confirmRemove:"Tap again to remove", areaInUse:"Entries using it this period: {n}.", pastKept:"Removing or renaming never changes past entries.", unsavedLists:"Unsaved changes to the lists", discard:"Discard", dupArea:"There is already an area called {name}.", dupActivity:"This activity is already in the area.", leaveUnsaved:"You have unsaved changes to the lists. Leave without saving?", noWorkEmailTitle:"No Blue Forest email yet?", noWorkEmailText:"{email} is not a Blue Forest address. If you do not have a Blue Forest email yet, choose your name to register.", noChoices:"Your name is not available. Ask Faruk to add you or to enter your email in Settings.", personalEmail:"personal email", workEmail:"Work email", next:"Continue", createAccount:"Create account", rememberUser:"You will use this username to sign in.", welcome:"Account created. Welcome!", forgotText:"Ask Faruk to reset your PIN in Settings. Then choose Create your account again and enter your work email.", defaultEmail:"username@blueforest.co", e_email_not_found:"Please enter the correct email.", e_already_registered:"This account already exists. Sign in with your username and PIN, or ask Faruk to reset your PIN.", e_email_in_use:"This email belongs to another person.", username:"Username", signupCta:"First time? Create your account", forgot:"Forgot PIN?", signupTitle:"Create your account", signupIntro:"Enter your Blue Forest email address. It must match the email on the staff list.", email:"Email",
   yourUsername:"Your username", backToSignIn:"Back to sign in",
   forgotTitle:"Forgot your PIN?", createPinTitle:"Create your PIN", hello:"Hello",
   autoUser:"set automatically",
@@ -230,10 +246,10 @@ const L = {
   staff:"Staff", avgDone:"Average completion", missingDays:"Missing weekdays", openFlags:"Open flags", lastEntry:"Last entry", ofDays:"of", days:"days", noEntryYet:"no entries", flagThis:"Flag / ask", askAbout:"Ask about this day", sendFlag:"Send to", flagSent:"Sent. It is now in their messages.", qDetail:"Please add more detail.", qResult:"What was the result?", qWhere:"Where exactly was this?", qMissing:"No entry for this day: what happened?",
   allPeople:"Everyone", allTypes:"All work types", allAreas:"All areas", search:"Search", export:"Download Excel", exportAll:"Download all timesheets (Excel)", statusAll:"All", resolve:"Resolve", reopen:"Reopen", followUp:"Ask again", awaitingReply:"Awaiting reply",
   staffList:"Staff", addStaff:"Add person", name:"Full name", position:"Position", station:"Duty station", lineManager:"Direct line manager", role:"Role", roleStaff:"Staff", roleAdmin:"Project Director (sees everyone)", active:"Active", resetPin:"Reset PIN", pinResetDone:"PIN cleared. They will create a new one at next sign-in.", hasPin:"PIN set", noPin:"No PIN yet",
-  lists:"Lists", workTypes:"Work types", countsWork:"Counts as working day", areasActs:"Activity areas and activities (one per line)", addType:"Add work type", addArea:"Add area", saveLists:"Save lists", listsSaved:"Lists saved.", staffSaved:"Saved.",
+  lists:"Lists", workTypes:"Work types", countsWork:"Working day", areasActs:"Activity areas and activities (one per line)", addType:"Add work type", addArea:"Add area", saveLists:"Save lists", listsSaved:"Lists saved.", staffSaved:"Saved.",
   demo:"Demo mode: data stays on this device only. Faruk's demo PIN is 1234. Connect Supabase (see the setup guide) to share timesheets.", netErr:"Could not reach the server. Your entries are kept on this phone and will sync later.", needOnline:"This needs an internet connection.", signedOut:"Your session ended. Please sign in again.",
   back:"Back", periodOverview:"Period overview", entriesIn:"entries", flagFor:"Flag", details:"Details", wd:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], wdLong:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"], months:["January","February","March","April","May","June","July","August","September","October","November","December"]},
- pt: {appSub:"Folhas de horas", noWorkEmailTitle:"Ainda sem email da Blue Forest?", noWorkEmailText:"{email} não é um endereço da Blue Forest. Se ainda não tem email da Blue Forest, escolha o seu nome para se registar.", noChoices:"O seu nome não está disponível. Peça ao Faruk para o adicionar ou para inserir o seu email nas Definições.", personalEmail:"email pessoal", workEmail:"Email de trabalho", next:"Continuar", createAccount:"Criar conta", rememberUser:"Vai usar este nome de utilizador para entrar.", welcome:"Conta criada. Bem-vindo!", forgotText:"Peça ao Faruk para repor o seu PIN nas Definições. Depois escolha Criar conta outra vez e escreva o seu email de trabalho.", defaultEmail:"utilizador@blueforest.co", e_email_not_found:"Por favor, introduza o email correcto.", e_already_registered:"Esta conta já existe. Entre com o seu nome de utilizador e PIN, ou peça ao Faruk para repor o seu PIN.", e_email_in_use:"Este email pertence a outra pessoa.", username:"Nome de utilizador", signupCta:"Primeira vez? Crie a sua conta", forgot:"Esqueceu o PIN?", signupTitle:"Criar conta", signupIntro:"Escreva o seu email da Blue Forest. Tem de coincidir com o email da lista de pessoal.", email:"Email",
+ pt: {appSub:"Folhas de horas", areasTitle:"Áreas de actividade", newAreaName:"Nome da nova área de actividade", add:"Adicionar", searchAreas:"Pesquisar áreas e actividades", unnamedArea:"(sem nome)", activitiesWord:"actividades", noActivities:"Ainda sem actividades.", addActivity:"Adicionar uma actividade a esta área", areaName:"Nome da área", removeArea:"Remover área", confirmRemove:"Toque outra vez para remover", areaInUse:"Registos que a usam neste período: {n}.", pastKept:"Remover ou mudar o nome nunca altera registos anteriores.", unsavedLists:"Alterações às listas por guardar", discard:"Descartar", dupArea:"Já existe uma área chamada {name}.", dupActivity:"Esta actividade já está na área.", leaveUnsaved:"Tem alterações às listas por guardar. Sair sem guardar?", noWorkEmailTitle:"Ainda sem email da Blue Forest?", noWorkEmailText:"{email} não é um endereço da Blue Forest. Se ainda não tem email da Blue Forest, escolha o seu nome para se registar.", noChoices:"O seu nome não está disponível. Peça ao Faruk para o adicionar ou para inserir o seu email nas Definições.", personalEmail:"email pessoal", workEmail:"Email de trabalho", next:"Continuar", createAccount:"Criar conta", rememberUser:"Vai usar este nome de utilizador para entrar.", welcome:"Conta criada. Bem-vindo!", forgotText:"Peça ao Faruk para repor o seu PIN nas Definições. Depois escolha Criar conta outra vez e escreva o seu email de trabalho.", defaultEmail:"utilizador@blueforest.co", e_email_not_found:"Por favor, introduza o email correcto.", e_already_registered:"Esta conta já existe. Entre com o seu nome de utilizador e PIN, ou peça ao Faruk para repor o seu PIN.", e_email_in_use:"Este email pertence a outra pessoa.", username:"Nome de utilizador", signupCta:"Primeira vez? Crie a sua conta", forgot:"Esqueceu o PIN?", signupTitle:"Criar conta", signupIntro:"Escreva o seu email da Blue Forest. Tem de coincidir com o email da lista de pessoal.", email:"Email",
   yourUsername:"O seu nome de utilizador", backToSignIn:"Voltar a entrar",
   forgotTitle:"Esqueceu o PIN?", createPinTitle:"Crie o seu PIN", hello:"Olá",
   autoUser:"definido automaticamente",
@@ -251,7 +267,7 @@ const L = {
   staff:"Pessoal", avgDone:"Preenchimento médio", missingDays:"Dias úteis em falta", openFlags:"Pedidos abertos", lastEntry:"Último registo", ofDays:"de", days:"dias", noEntryYet:"sem registos", flagThis:"Assinalar / perguntar", askAbout:"Perguntar sobre este dia", sendFlag:"Enviar a", flagSent:"Enviado. Já está nas mensagens da pessoa.", qDetail:"Por favor, acrescente mais detalhe.", qResult:"Qual foi o resultado?", qWhere:"Onde exactamente foi?", qMissing:"Sem registo neste dia: o que aconteceu?",
   allPeople:"Todos", allTypes:"Todos os tipos", allAreas:"Todas as áreas", search:"Pesquisar", export:"Descarregar Excel", exportAll:"Descarregar todas as folhas (Excel)", statusAll:"Todos", resolve:"Resolver", reopen:"Reabrir", followUp:"Perguntar de novo", awaitingReply:"A aguardar resposta",
   staffList:"Pessoal", addStaff:"Adicionar pessoa", name:"Nome completo", position:"Cargo", station:"Local de trabalho", lineManager:"Superior directo", role:"Função", roleStaff:"Pessoal", roleAdmin:"Director de Projecto (vê todos)", active:"Activo", resetPin:"Repor PIN", pinResetDone:"PIN apagado. A pessoa cria um novo no próximo acesso.", hasPin:"PIN definido", noPin:"Sem PIN",
-  lists:"Listas", workTypes:"Tipos de trabalho", countsWork:"Conta como dia de trabalho", areasActs:"Áreas de actividade e actividades (uma por linha)", addType:"Adicionar tipo", addArea:"Adicionar área", saveLists:"Guardar listas", listsSaved:"Listas guardadas.", staffSaved:"Guardado.",
+  lists:"Listas", workTypes:"Tipos de trabalho", countsWork:"Dia de trabalho", areasActs:"Áreas de actividade e actividades (uma por linha)", addType:"Adicionar tipo", addArea:"Adicionar área", saveLists:"Guardar listas", listsSaved:"Listas guardadas.", staffSaved:"Guardado.",
   demo:"Modo de demonstração: os dados ficam só neste dispositivo. PIN de demonstração do Faruk: 1234. Ligue o Supabase (ver guia) para partilhar as folhas.", netErr:"Não foi possível ligar ao servidor. Os registos ficam neste telemóvel e sincronizam depois.", needOnline:"Isto precisa de ligação à internet.", signedOut:"A sessão terminou. Entre outra vez.",
   back:"Voltar", periodOverview:"Resumo do período", entriesIn:"registos", flagFor:"Pedido", details:"Detalhes", wd:["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"], wdLong:["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"], months:["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"]}
 };
@@ -357,7 +373,7 @@ setInterval(() => { if (S.session && S.outbox.length) flush(); }, 60000);
 
 // ---------- sign in and sign up
 function shell(inner){
-  return `<div class="login"><div class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="var(--wash)"/><path d="M20 7c-5 4-7 8-7 12 0 3 2 5 7 5s7-2 7-5c0-4-2-8-7-12z" fill="var(--brand-2)"/><path d="M20 24v9M20 27c-3 1-5 3-6 6M20 27c3 1 5 3 6 6" stroke="var(--brand)" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg><div><h1>MozBlue</h1><div class="muted">${esc(t("appSub"))} · Blue Forest</div></div></div>${inner}</div>`;
+  return `<div class="login"><div class="logo"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="15" fill="#1f5f45"/><rect x="13" y="14" width="38" height="38" rx="6" fill="#f4faf6"/><path d="M13 22h38" stroke="#1f5f45" stroke-width="2"/><path d="M22 10v8M42 10v8" stroke="#9fe3bd" stroke-width="3.2" stroke-linecap="round"/><path d="M13 44c4-3 8-3 12.5 0s8.5 3 12.5 0 8.5-3 13 0v2a6 6 0 0 1-6 6H19a6 6 0 0 1-6-6z" fill="#7fc8d6"/><path d="M32 43v-9M32 37c-3 1-5 3-6 6M32 37c3 1 5 3 6 6" fill="none" stroke="#1f5f45" stroke-width="2" stroke-linecap="round"/><ellipse cx="32" cy="30.5" rx="7.5" ry="4.5" fill="#2c7a5a"/></svg><div><h1>MozBlue</h1><div class="muted">${esc(t("appSub"))} · Blue Forest</div></div></div>${inner}</div>`;
 }
 const PIN_RE = /^[A-Za-z0-9]{4,8}$/;
 const pinInput = (id, ac) => `<input id="${id}" class="pin" type="password" autocomplete="${ac}" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="8" required>`;
@@ -466,7 +482,7 @@ function renderTabs(){
     : [["day",t("day")],["period",t("period")],["feed",t("feed"),unread],["account",t("account")]];
   $("#tabsIn").innerHTML = tabs.map(([k,l,b]) => `<button type="button" data-tab="${k}" aria-current="${S.tab === k || (k === "day" && S.tab === "period" && isAdmin()) || (k === "team" && S.tab === "person") ? "page" : "false"}"><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[k === "day" && isAdmin() ? "day" : k]}</svg><span>${esc(l)}</span>${b ? `<span class="badge">${b}</span>` : ""}</button>`).join("");
   $("#tabs").hidden = false;
-  $$("#tabsIn [data-tab]").forEach(b => b.onclick = () => { S.tab = b.dataset.tab; S.edit = null; S.composing = null; if (S.tab === "day") S.date = S.date || S.today; render(); window.scrollTo(0,0); });
+  $$("#tabsIn [data-tab]").forEach(b => b.onclick = () => { if (S.tab === "settings" && b.dataset.tab !== "settings" && listsDirty() && !window.confirm(t("leaveUnsaved"))) return; if (b.dataset.tab !== "settings") S.draft = null; S.teamAt = 0; S.tab = b.dataset.tab; S.edit = null; S.composing = null; if (S.tab === "day") S.date = S.date || S.today; render(); window.scrollTo(0,0); });
   $("#whoBtn").hidden = false; $("#whoBtn").textContent = (S.session.username || S.session.name || "") + " · " + t("signOut");
 }
 
@@ -582,9 +598,9 @@ function wirePin(){ $("#pinForm").onsubmit = async ev => { ev.preventDefault(); 
 // ---------- Project Director: team
 async function loadTeam(start, force){
   const key = start;
-  if (!force && S.team && S.teamKey === key) return S.team;
+  if (!force && S.team && S.teamKey === key && Date.now() - (S.teamAt || 0) < 30000) return S.team;
   const res = await authed("teamData", {from: start, to: periodEnd(start)});
-  if (res.ok){ S.team = res; S.teamKey = key; S.staff = res.staff; S.lists = res.lists || S.lists; S.today = res.today || S.today; persist(); }
+  if (res.ok){ S.team = res; S.teamKey = key; S.teamAt = Date.now(); S.staff = res.staff; S.lists = res.lists || S.lists; S.today = res.today || S.today; persist(); }
   return S.team;
 }
 function teamPeople(){ return (S.team ? S.team.staff : S.staff).filter(s => s.active !== false && (s.role !== "admin" || S.team.entries.some(e => e.staffId === s.id))); }
@@ -660,11 +676,9 @@ async function renderSettings(){
   $("#main").innerHTML = `<h1 class="pt">${esc(t("settings"))}</h1>
     <div class="card"><div class="row" style="justify-content:space-between"><h3>${esc(t("staffList"))}</h3><button class="btn sm" data-act="newStaff">+ ${esc(t("addStaff"))}</button></div>
       ${ed ? staffForm(ed) : ""}<div id="staffRows">${staff.map(s => `<div class="srow"><span><b>${esc(s.name)}</b> ${s.role === "admin" ? `<span class="chip info">${esc(t("roleAdmin").split(" (")[0])}</span>` : ""}${s.active === false ? ` <span class="chip mute">off</span>` : ""}<div class="small muted"><span class="mono">${esc(s.username || "")}</span> · ${esc(s.email || "")}${s.emailExternal ? ` <span class="chip warn">${esc(t("personalEmail"))}</span>` : ""} · ${esc(s.hasPin ? t("hasPin") : t("noPin"))}</div><div class="small muted">${esc([s.position, s.station, s.lineManager && (t("lineManager") + ": " + s.lineManager)].filter(Boolean).join(" · "))}</div></span><span class="row" style="gap:6px"><button class="btn sm" data-act="editStaff" data-id="${esc(s.id)}">${esc(t("editEntry").split(" ")[0])}</button>${s.hasPin ? `<button class="btn sm ghost" data-act="resetPin" data-id="${esc(s.id)}">${esc(t("resetPin"))}</button>` : ""}</span></div>`).join("")}</div></div>
-    <div class="card listedit"><h3>${esc(t("workTypes"))}</h3><div id="wtRows">${L2.workTypes.map((w,i) => `<div class="wtrow"><input data-wt="${i}" value="${esc(w.name)}"><label><input type="checkbox" data-wtw="${i}"${w.working ? " checked" : ""}> ${esc(t("countsWork"))}</label><button class="x" data-act="delWT" data-i="${i}" aria-label="Remove">×</button></div>`).join("")}</div><button class="btn sm" data-act="addWT">+ ${esc(t("addType"))}</button>
-      <h3 style="margin-top:18px">${esc(t("areasActs"))}</h3><div id="areaRows">${L2.areas.map((a,i) => `<div class="card" style="box-shadow:none;margin-bottom:8px"><div class="wtrow" style="grid-template-columns:minmax(0,1fr) 32px"><input data-an="${i}" value="${esc(a.name)}"><button class="x" data-act="delArea" data-i="${i}" aria-label="Remove">×</button></div><textarea data-aa="${i}">${esc(a.activities.join("\n"))}</textarea></div>`).join("")}</div>
-      <div class="row"><button class="btn sm" data-act="addArea">+ ${esc(t("addArea"))}</button><span class="grow"></span><button class="btn primary" data-act="saveLists">${esc(t("saveLists"))}</button></div></div>
+    <div id="listsBox">${listsHtml()}</div>
     ${emailCard()}${pinCard()}<div class="card"><button class="btn danger" data-act="signOut">${esc(t("signOut"))}</button></div>`;
-  wirePin(); wireEmail();
+  wirePin(); wireEmail(); wireLists();
   if (!S.team){ try { await loadTeam(S.pStart || periodStart(S.today)); if (S.tab === "settings") renderSettings(); } catch(e){} }
 }
 function staffForm(s){
@@ -672,10 +686,45 @@ function staffForm(s){
     <label class="f">${esc(t("role"))}<select id="sRole"><option value="staff"${s.role !== "admin" ? " selected" : ""}>${esc(t("roleStaff"))}</option><option value="admin"${s.role === "admin" ? " selected" : ""}>${esc(t("roleAdmin"))}</option></select></label><label class="f">${esc(t("active"))}<select id="sAct"><option value="1"${s.active !== false ? " selected" : ""}>✓</option><option value="0"${s.active === false ? " selected" : ""}>—</option></select></label></div>
     <div class="row"><button class="btn primary" type="submit">${esc(t("save"))}</button><button class="btn" type="button" data-act="cancelStaff">${esc(t("cancel"))}</button></div></form>`;
 }
-function collectLists(){
-  const wts = $$("[data-wt]").map(i => ({name: i.value.trim(), working: $(`[data-wtw="${i.dataset.wt}"]`).checked})).filter(w => w.name);
-  const areas = $$("[data-an]").map(i => ({name: i.value.trim(), activities: $(`[data-aa="${i.dataset.an}"]`).value.split("\n").map(x => x.trim()).filter(Boolean)})).filter(a => a.name);
-  return {workTypes: wts, areas, periodStartDay: psd()};
+// ---------- Project Director: lists (work types, activity areas and their activities)
+function draft(){ if (!S.draft) S.draft = JSON.parse(JSON.stringify(S.lists || {workTypes:[], areas:[]})); return S.draft; }
+const listsDirty = () => !!S.draft && JSON.stringify(S.draft) !== JSON.stringify(S.lists || {});
+function areaUse(name){ return S.team ? S.team.entries.filter(e => e.area === name).length : 0; }
+function listsHtml(){
+  const D = draft(), q = (S.areaQ || "").trim().toLowerCase(), open = S.areaOpen || {};
+  const shown = D.areas.map((a, i) => [a, i]).filter(([a]) => !q || a.name.toLowerCase().includes(q) || a.activities.some(x => x.toLowerCase().includes(q)));
+  return `<div class="card listedit"><h3>${esc(t("workTypes"))}</h3><div>${D.workTypes.map((w, i) => `<div class="wtrow"><input data-wt="${i}" value="${esc(w.name)}" aria-label="${esc(t("workType"))}"><label><input type="checkbox" data-wtw="${i}"${w.working ? " checked" : ""}> ${esc(t("countsWork"))}</label><button class="x" type="button" data-act="delWT" data-i="${i}" aria-label="${esc(t("del"))}">×</button></div>`).join("")}</div>
+      <button class="btn sm" type="button" data-act="addWT">+ ${esc(t("addType"))}</button></div>
+    <div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">${esc(t("areasTitle"))} <span class="chip mute">${D.areas.length}</span></h3><button class="btn sm" type="button" data-act="startAddArea">+ ${esc(t("addArea"))}</button></div>
+      ${S.addingArea ? `<div class="newarea"><input id="newArea" placeholder="${esc(t("newAreaName"))}"><button class="btn sm primary" type="button" data-act="confirmAddArea">${esc(t("add"))}</button><button class="btn sm" type="button" data-act="cancelAddArea">${esc(t("cancel"))}</button></div>` : ""}
+      <input id="areaQ" class="areaq" placeholder="${esc(t("searchAreas"))}" value="${esc(S.areaQ || "")}">
+      <div>${shown.map(([a, i]) => { const isOpen = open[i] || (q && shown.length <= 3), use = S.confirmDel === i ? areaUse(a.name) : 0;
+        return `<div class="area${isOpen ? " open" : ""}"><button type="button" class="ahead" data-act="toggleArea" data-i="${i}"><span><b>${esc(a.name || t("unnamedArea"))}</b> <span class="small muted">${a.activities.length} ${esc(t("activitiesWord"))}</span></span><span class="chev" aria-hidden="true">›</span></button>
+          ${isOpen ? `<div class="abody"><div class="achips">${a.activities.map((x, j) => `<span class="achip">${esc(x)}<button type="button" data-act="delAct" data-i="${i}" data-j="${j}" aria-label="${esc(t("del"))} ${esc(x)}">×</button></span>`).join("") || `<span class="small muted">${esc(t("noActivities"))}</span>`}</div>
+            <div class="newarea"><input data-newact="${i}" placeholder="${esc(t("addActivity"))}"><button class="btn sm" type="button" data-act="addAct" data-i="${i}">${esc(t("add"))}</button></div>
+            <div class="row" style="align-items:flex-end"><label class="f grow">${esc(t("areaName"))}<input data-aname="${i}" value="${esc(a.name)}"></label><button class="btn sm danger" type="button" data-act="delArea" data-i="${i}">${esc(S.confirmDel === i ? t("confirmRemove") : t("removeArea"))}</button></div>
+            <p class="small muted" style="margin:0">${S.confirmDel === i && use ? esc(t("areaInUse").replace("{n}", use)) + " " : ""}${esc(t("pastKept"))}</p></div>` : ""}</div>`; }).join("") || `<div class="empty">—</div>`}</div></div>
+    <div class="savebar" id="saveBar"${listsDirty() ? "" : " hidden"}><span>${esc(t("unsavedLists"))}</span><span class="grow"></span><button class="btn sm" type="button" data-act="discardLists">${esc(t("discard"))}</button><button class="btn sm primary" type="button" data-act="saveLists">${esc(t("saveLists"))}</button></div>`;
+}
+function drawLists(focusSel){
+  const box = $("#listsBox"); if (!box) return; box.innerHTML = listsHtml(); wireLists();
+  if (focusSel){ const el = $(focusSel); if (el){ el.focus(); if (el.setSelectionRange && el.value) el.setSelectionRange(el.value.length, el.value.length); } }
+}
+function markDirty(){ const b = $("#saveBar"); if (b) b.hidden = !listsDirty(); }
+function wireLists(){
+  $$("[data-wt]").forEach(i => i.oninput = () => { draft().workTypes[+i.dataset.wt].name = i.value; markDirty(); });
+  $$("[data-wtw]").forEach(i => i.onchange = () => { draft().workTypes[+i.dataset.wtw].working = i.checked; markDirty(); });
+  $$("[data-aname]").forEach(i => i.oninput = () => { draft().areas[+i.dataset.aname].name = i.value; markDirty(); });
+  $$("[data-newact]").forEach(i => i.onkeydown = e => { if (e.key === "Enter"){ e.preventDefault(); ACT.addAct({dataset:{i: i.dataset.newact}}); } });
+  const q = $("#areaQ"); if (q) q.oninput = () => { S.areaQ = q.value; drawLists("#areaQ"); };
+  const na = $("#newArea"); if (na){ na.focus(); na.onkeydown = e => { if (e.key === "Enter"){ e.preventDefault(); ACT.confirmAddArea(); } if (e.key === "Escape") ACT.cancelAddArea(); }; }
+}
+function cleanLists(D){
+  const seen = new Set(), areas = [];
+  for (const a of D.areas){ const name = a.name.trim(); if (!name) continue; const key = name.toLowerCase(); if (seen.has(key)) return {error: t("dupArea").replace("{name}", name)}; seen.add(key);
+    const acts = []; a.activities.map(x => x.trim()).filter(Boolean).forEach(x => { if (!acts.some(y => y.toLowerCase() === x.toLowerCase())) acts.push(x); }); areas.push({name, activities: acts}); }
+  const wts = D.workTypes.map(w => ({name: w.name.trim(), working: !!w.working})).filter(w => w.name);
+  return {lists: {workTypes: wts, areas, periodStartDay: psd()}};
 }
 
 // ---------- Excel export in the timesheet template layout
@@ -758,11 +807,21 @@ const ACT = {
   editStaff: el => { S.editStaff = {...(S.team ? S.team.staff : S.staff).find(s => s.id === el.dataset.id)}; renderSettings(); window.scrollTo(0,0); },
   cancelStaff: () => { S.editStaff = null; renderSettings(); },
   resetPin: async el => { try { const r = await authed("resetPin", {targetId: el.dataset.id}); if (r.ok){ toast(t("pinResetDone")); S.team = null; renderSettings(); } } catch(e){ toast(t("needOnline")); } },
-  addWT: () => { S.lists = collectLists(); S.lists.workTypes.push({name: "", working: true}); renderSettings(); },
-  delWT: el => { const l = collectLists(); l.workTypes.splice(+el.dataset.i, 1); S.lists = l; renderSettings(); },
-  addArea: () => { S.lists = collectLists(); S.lists.areas.push({name: "", activities: []}); renderSettings(); },
-  delArea: el => { const l = collectLists(); l.areas.splice(+el.dataset.i, 1); S.lists = l; renderSettings(); },
-  saveLists: async () => { const l = collectLists(); try { const r = await authed("saveLists", {lists: l}); if (r.ok){ S.lists = r.lists; persist(); toast(t("listsSaved")); renderSettings(); } else toast(r.error); } catch(e){ toast(t("needOnline")); } }
+  addWT: () => { draft().workTypes.push({name: "", working: true}); drawLists(`[data-wt="${draft().workTypes.length - 1}"]`); markDirty(); },
+  delWT: el => { draft().workTypes.splice(+el.dataset.i, 1); drawLists(); markDirty(); },
+  toggleArea: el => { const i = +el.dataset.i; S.areaOpen = S.areaOpen || {}; S.areaOpen[i] = !S.areaOpen[i]; S.confirmDel = null; drawLists(); },
+  startAddArea: () => { S.addingArea = true; drawLists(); },
+  cancelAddArea: () => { S.addingArea = false; drawLists(); },
+  confirmAddArea: () => { const v = ($("#newArea") || {}).value || ""; if (!v.trim()) return;
+    if (draft().areas.some(a => a.name.trim().toLowerCase() === v.trim().toLowerCase())){ toast(t("dupArea").replace("{name}", v.trim())); return; }
+    draft().areas.push({name: v.trim(), activities: []}); const i = draft().areas.length - 1; S.areaOpen = {[i]: true}; S.addingArea = false; S.areaQ = ""; drawLists(`[data-newact="${i}"]`); markDirty(); },
+  addAct: el => { const i = +el.dataset.i, inp = $(`[data-newact="${i}"]`), v = inp ? inp.value.trim() : ""; if (!v) return; const acts = draft().areas[i].activities;
+    if (acts.some(x => x.toLowerCase() === v.toLowerCase())){ toast(t("dupActivity")); return; } acts.push(v); drawLists(`[data-newact="${i}"]`); markDirty(); },
+  delAct: el => { draft().areas[+el.dataset.i].activities.splice(+el.dataset.j, 1); drawLists(); markDirty(); },
+  delArea: el => { const i = +el.dataset.i; if (S.confirmDel !== i){ S.confirmDel = i; drawLists(); return; } draft().areas.splice(i, 1); S.confirmDel = null; S.areaOpen = {}; drawLists(); markDirty(); },
+  discardLists: () => { S.draft = null; S.confirmDel = null; S.addingArea = false; drawLists(); },
+  saveLists: async () => { const c = cleanLists(draft()); if (c.error){ toast(c.error); return; }
+    try { const r = await authed("saveLists", {lists: c.lists}); if (r.ok){ S.lists = r.lists; S.draft = null; S.confirmDel = null; persist(); toast(t("listsSaved")); drawLists(); } else toast(r.error); } catch(e){ toast(t("needOnline")); } }
 };
 async function flagStatus(id, reopen){ try { const r = await authed("resolveFlag", {flagId: id, reopen}); if (r.ok){ const i = S.team.flags.findIndex(f => f.id === id); S.team.flags[i] = r.flag; render(); } } catch(e){ toast(t("needOnline")); } }
 document.addEventListener("click", ev => { const el = ev.target.closest("[data-act]"); if (!el || !ACT[el.dataset.act]) return; if (el.tagName === "A") ev.preventDefault(); ACT[el.dataset.act](el); });

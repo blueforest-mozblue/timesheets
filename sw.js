@@ -1,6 +1,6 @@
 // Keeps the app shell on the phone so it opens without internet. Data calls always go to the network.
-const CACHE = "mbts-v5";
-const SHELL = ["./", "index.html", "config.js", "xlsx.full.min.js", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
+const CACHE = "mbts-v6";
+const SHELL = ["./", "index.html", "config.js", "xlsx.full.min.js", "manifest.webmanifest", "icon-192.png", "icon-512.png", "favicon.svg"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener("fetch", e => {
