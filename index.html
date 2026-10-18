@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>MozBlue Timesheets</title>
+<meta name="theme-color" content="#1f5f45">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<script src="config.js"></script>
+<script src="gas-mock.js"></script>
+<script src="demo-backend.js"></script>
+<script src="xlsx.full.min.js" defer></script>
+<style>
+/* Field-first layout: light, high-contrast surfaces readable outdoors; one green accent for actions; status carried by small coloured chips. */
+:root{
+  color-scheme:light;
+  --bg:#f3f5f1; --card:#ffffff; --ink:#11231b; --ink-2:#2f443a; --muted:#5d6e66; --faint:#8a9891; --line:#dfe5df; --line-2:#cbd5cd;
+  --brand:#1f5f45; --brand-2:#2c7a5a; --brand-ink:#ffffff; --wash:#e5f1ea;
+  --ok:#2c7a5a; --ok-wash:#e2f2e8; --warn:#9a6212; --warn-wash:#fbefd9; --bad:#b23a26; --bad-wash:#fbe5e0; --info:#2d5aa8; --info-wash:#e5ecf9; --off:#7a6aa0; --off-wash:#eeeaf6;
+  --font-display:"Outfit",ui-rounded,system-ui,sans-serif; --font-ui:"Figtree",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; --font-code:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:16px; --shadow:0 1px 2px rgba(17,35,27,.06),0 6px 20px rgba(17,35,27,.05);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+  --bg:#0f1714; --card:#16211c; --ink:#e8efea; --ink-2:#c8d4cd; --muted:#97a69e; --faint:#6f7e77; --line:#24322b; --line-2:#33443b;
+  --brand:#3d9a72; --brand-2:#4fb085; --brand-ink:#0b1410; --wash:#1b2c24; --ok:#62c08f; --ok-wash:#173024; --warn:#e2ac5a; --warn-wash:#2e2414; --bad:#f08470; --bad-wash:#33201b; --info:#8eaef0; --info-wash:#1b2436; --off:#b6a6dd; --off-wash:#241f33; --shadow:none}}
+:root[data-theme="dark"]{color-scheme:dark;
+  --bg:#0f1714; --card:#16211c; --ink:#e8efea; --ink-2:#c8d4cd; --muted:#97a69e; --faint:#6f7e77; --line:#24322b; --line-2:#33443b;
+  --brand:#3d9a72; --brand-2:#4fb085; --brand-ink:#0b1410; --wash:#1b2c24; --ok:#62c08f; --ok-wash:#173024; --warn:#e2ac5a; --warn-wash:#2e2414; --bad:#f08470; --bad-wash:#33201b; --info:#8eaef0; --info-wash:#1b2436; --off:#b6a6dd; --off-wash:#241f33; --shadow:none}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg)}
+body{color:var(--ink);font-family:var(--font-ui);font-size:15.5px;line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--brand);text-underline-offset:2px}
+:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left,0px))}
+/* header */
+header.top{position:sticky;top:0;z-index:10;background:var(--brand);color:#fff;padding-top:env(safe-area-inset-top,0px)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
+.brand svg{width:30px;height:30px;flex:none}
+.brand b{font-family:var(--font-display);font-weight:600;font-size:19px;line-height:1;display:block}
+.brand small{font-family:var(--font-display);font-size:10px;letter-spacing:.24em;text-transform:uppercase;opacity:.8;display:block;margin-top:3px}
+.hbtn{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#fff;border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;white-space:nowrap}
+.hbtn:hover{background:rgba(255,255,255,.2)}
+.sync{font-size:12px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.14);white-space:nowrap}
+.sync.pending{background:#f3c26b;color:#3a2a08}.sync.off{background:#f08470;color:#2a0d07}
+@media (max-width:520px){.hide-sm{display:none}}
+.banner{background:var(--warn-wash);color:var(--warn);font-size:13px;padding:8px 0;border-bottom:1px solid var(--line)}
+/* tabs */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:9;background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center}
+nav.tabs .in{display:flex;gap:4px;max-width:640px;width:100%}
+nav.tabs button{flex:1;border:0;background:none;padding:6px 2px;border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11.5px;color:var(--muted);cursor:pointer;position:relative;font-family:var(--font-display)}
+nav.tabs button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+nav.tabs button[aria-current="page"]{color:var(--brand);background:var(--wash)}
+nav.tabs .badge{position:absolute;top:2px;right:calc(50% - 22px);background:var(--bad);color:#fff;border-radius:999px;font-size:10.5px;min-width:18px;height:18px;line-height:18px;padding:0 5px;font-family:var(--font-ui);font-weight:600}
+/* common */
+h1.pt{font-family:var(--font-display);font-weight:600;font-size:clamp(24px,4vw,30px);letter-spacing:-.01em;margin:22px 0 4px}
+.sub{color:var(--muted);margin:0 0 14px;font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);margin-bottom:12px}
+.card h3{font-family:var(--font-display);font-weight:500;font-size:17px;margin:0 0 8px}
+.btn{border:1px solid var(--line-2);background:var(--card);border-radius:12px;padding:10px 16px;cursor:pointer;font-weight:500;color:var(--ink)}
+.btn:hover{border-color:var(--brand-2)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.btn.primary:hover{background:var(--brand-2)}
+.btn.sm{padding:6px 12px;font-size:13.5px;border-radius:10px}
+.btn.danger{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,var(--line))}
+.btn.ghost{border-color:transparent;background:none}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grow{flex:1}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted);font-weight:500;min-width:0}
+input,select,textarea{background:var(--card);border:1px solid var(--line-2);border-radius:12px;padding:11px 12px;width:100%;min-width:0;font-size:16px;color:var(--ink)}
+textarea{min-height:96px;resize:vertical;line-height:1.45}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px color-mix(in srgb,var(--brand-2) 20%,transparent)}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:560px){.g2{grid-template-columns:minmax(0,1fr)}}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--wash);color:var(--brand);white-space:nowrap}
+.chip.ok{background:var(--ok-wash);color:var(--ok)}.chip.warn{background:var(--warn-wash);color:var(--warn)}.chip.bad{background:var(--bad-wash);color:var(--bad)}.chip.info{background:var(--info-wash);color:var(--info)}.chip.off{background:var(--off-wash);color:var(--off)}.chip.mute{background:color-mix(in srgb,var(--line) 70%,transparent);color:var(--muted)}
+.muted{color:var(--muted)}.small{font-size:13px}.mono{font-family:var(--font-code);font-size:12.5px}
+.empty{color:var(--faint);padding:10px 0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:14px;z-index:30;max-width:90vw;text-align:center}
+/* login */
+.login{max-width:420px;margin:36px auto}
+.login .logo{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.login .logo svg{width:46px;height:46px}
+.login h1{font-family:var(--font-display);font-size:26px;margin:0}
+.pin{font-family:var(--font-code);letter-spacing:.4em;font-size:22px;text-align:center}
+/* day */
+.dayhead{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:8px;margin-top:18px}
+.dayhead .nav{width:44px;height:44px;border-radius:12px;border:1px solid var(--line-2);background:var(--card);cursor:pointer;font-size:22px;line-height:1}
+.dayhead .mid{text-align:center}
+.dayhead .mid b{font-family:var(--font-display);font-weight:600;font-size:21px;display:block;line-height:1.2}
+.dayhead .mid span{font-size:13px;color:var(--muted)}
+.daytools{display:flex;gap:8px;justify-content:center;margin:10px 0 14px;flex-wrap:wrap}
+.daytools input{width:auto;padding:7px 10px;font-size:14px}
+.entry{border-left:4px solid var(--brand-2)}
+.entry.offday{border-left-color:var(--off)}
+.entry .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.entry .area{font-weight:600;margin-top:6px}
+.entry .meta{font-size:13px;color:var(--muted);margin-top:2px}
+.entry .sum{margin-top:8px;white-space:pre-wrap;color:var(--ink-2)}
+.flagbox{margin-top:12px;border-radius:12px;padding:10px 12px;background:var(--warn-wash);border:1px solid color-mix(in srgb,var(--warn) 25%,transparent)}
+.flagbox.done{background:color-mix(in srgb,var(--line) 45%,transparent);border-color:var(--line)}
+.flagbox .q{font-size:14px;color:var(--ink)}
+.flagbox .who{font-size:12px;color:var(--muted);margin-bottom:3px}
+.flagbox .a{margin-top:8px;font-size:14px;padding-left:10px;border-left:3px solid var(--brand-2)}
+.flagbox textarea{min-height:64px;margin-top:8px;background:var(--card)}
+.pend{font-size:11.5px;color:var(--warn);font-weight:600}
+/* calendar */
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal .wd{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);text-align:center;padding-bottom:2px}
+.cal .d{aspect-ratio:1/1;border-radius:12px;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;font-family:var(--font-display);font-size:16px;padding:0}
+.cal .d small{font-size:9.5px;font-family:var(--font-ui);color:var(--muted);line-height:1}
+.cal .d.filled{background:var(--ok-wash);border-color:color-mix(in srgb,var(--ok) 35%,transparent);color:var(--ok)}
+.cal .d.offd{background:var(--off-wash);border-color:color-mix(in srgb,var(--off) 30%,transparent);color:var(--off)}
+.cal .d.missing{background:var(--bad-wash);border-color:color-mix(in srgb,var(--bad) 35%,transparent);color:var(--bad)}
+.cal .d.weekend{background:transparent;color:var(--faint)}
+.cal .d.future{color:var(--faint);background:transparent;border-style:dashed}
+.cal .d.today{box-shadow:0 0 0 2px var(--brand)}
+.cal .d .dot{position:absolute;top:5px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--warn)}
+.cal .pad{visibility:hidden}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.pnav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 0 12px}
+.pnav b{font-family:var(--font-display);font-weight:500;font-size:17px;text-align:center}
+.sumtable{width:100%;border-collapse:collapse;font-size:14px}
+.sumtable td{padding:7px 0;border-top:1px solid var(--line)}
+.sumtable td:last-child{text-align:right;font-family:var(--font-code)}
+.sumtable tr.tot td{font-weight:600;border-top:2px solid var(--line-2)}
+/* team */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+@media (max-width:640px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.kpi b{font-family:var(--font-display);font-size:26px;font-weight:500;display:block;line-height:1.1}
+.kpi span{font-size:12.5px;color:var(--muted)}
+.kpi.alert b{color:var(--bad)}
+.person{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 4px;border-top:1px solid var(--line);cursor:pointer}
+.person:first-child{border-top:0}
+.person:hover{background:color-mix(in srgb,var(--wash) 50%,transparent)}
+.av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--wash);color:var(--brand);font-family:var(--font-display);font-weight:600}
+.person b{font-weight:600}
+.person .meta{font-size:12.5px;color:var(--muted)}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:6px;max-width:260px}
+.bar i{display:block;height:100%;background:var(--ok)}
+.person .r{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.erow{display:grid;grid-template-columns:86px minmax(0,1fr) auto;gap:12px;padding:12px 0;border-top:1px solid var(--line);align-items:start}
+.erow:first-child{border-top:0}
+.erow .dt{font-family:var(--font-code);font-size:12.5px;color:var(--muted)}
+.erow .dt b{display:block;font-family:var(--font-display);font-size:15px;color:var(--ink);font-weight:500}
+.erow .txt{min-width:0}
+.erow .txt .l1{font-weight:600;font-size:14px}
+.erow .txt .l2{font-size:13px;color:var(--muted)}
+.erow .txt .l3{font-size:14px;margin-top:4px;white-space:pre-wrap;color:var(--ink-2)}
+.erow.miss .txt .l1{color:var(--bad)}
+@media (max-width:560px){.erow{grid-template-columns:64px minmax(0,1fr)}.erow>.act{grid-column:2}}
+.compose{margin-top:8px;display:flex;flex-direction:column;gap:8px}
+.compose textarea{min-height:64px}
+.quick{display:flex;gap:6px;flex-wrap:wrap}
+.quick button{border:1px solid var(--line-2);background:var(--card);border-radius:999px;padding:4px 10px;font-size:12.5px;cursor:pointer;color:var(--ink-2)}
+.filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}
+@media (max-width:720px){.filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.filters input,.filters select{padding:8px 10px;font-size:14px}
+.segs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.segs button{border:1px solid var(--line-2);background:var(--card);border-radius:999px;padding:6px 12px;font-size:13.5px;cursor:pointer;color:var(--ink-2)}
+.segs button[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.srow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.srow:first-child{border-top:0}
+.listedit textarea{min-height:120px;font-size:14px}
+.wtrow{display:grid;grid-template-columns:minmax(0,1fr) auto 32px;gap:8px;align-items:center;margin-bottom:8px}
+.wtrow label{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;white-space:nowrap}
+.wtrow input[type=checkbox]{width:18px;height:18px;padding:0;accent-color:var(--brand)}
+.x{border:0;background:none;color:var(--faint);font-size:22px;cursor:pointer;line-height:1}
+.x:hover{color:var(--bad)}
+.back{border:0;background:none;color:var(--brand);font-weight:600;cursor:pointer;padding:16px 0 0;font-size:14.5px}
+@media (min-width:900px){
+  body{padding-bottom:20px}
+  nav.tabs{position:sticky;top:58px;bottom:auto;border-top:0;border-bottom:1px solid var(--line);padding:4px}
+  nav.tabs .in{max-width:980px}
+  nav.tabs button{flex-direction:row;justify-content:center;gap:8px;font-size:14px;padding:9px}
+  nav.tabs .badge{position:static}
+  .toast{bottom:28px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.5"/><path d="M20 7c-5 4-7 8-7 12 0 3 2 5 7 5s7-2 7-5c0-4-2-8-7-12z" fill="#9fe3bd"/><path d="M20 24v9M20 27c-3 1-5 3-6 6M20 27c3 1 5 3 6 6" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg><span><b>MozBlue</b><small id="brandSub">Timesheets</small></span></div>
+  <span class="sync" id="sync" hidden></span>
+  <button class="hbtn" id="langBtn" type="button" aria-label="Language">EN | PT</button>
+  <button class="hbtn hide-sm" id="whoBtn" type="button" hidden></button>
+</div></header>
+<div class="banner" id="demoBanner" hidden><div class="wrap" id="demoText"></div></div>
+<nav class="tabs" id="tabs" hidden><div class="in" id="tabsIn"></div></nav>
+<main class="wrap" id="main"></main>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+// ---------- basics
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad = n => String(n).padStart(2, "0");
+const iso = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+const dt = s => new Date(s + "T12:00:00");
+const addDays = (s, n) => { const d = dt(s); d.setDate(d.getDate() + n); return iso(d); };
+const nid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const store = { get(k, d){ try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch(e){ return d; } }, set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }, del(k){ try { localStorage.removeItem(k); } catch(e){} } };
+function toast(t){ const el = $("#toast"); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 2600); }
+
+// ---------- language
+const L = {
+ en: {appSub:"Timesheets", signIn:"Sign in", yourName:"Your name", choose:"Choose your name", pin:"PIN", createPin:"Create your PIN (4 to 8 digits)", confirmPin:"Repeat PIN", firstTime:"First time here: choose a PIN you will remember. You will use it every time you sign in.",
+  wrongPin:"Wrong PIN. Try again.", locked:"Too many attempts. Wait 15 minutes, or ask Faruk to reset your PIN.", pinMismatch:"The two PINs do not match.", pinRule:"PIN must be 4 to 8 digits.", signOut:"Sign out", offline:"Offline", saved:"Saved", waiting:"waiting to sync",
+  today:"Today", day:"Day", period:"Period", feed:"Messages", account:"Account", team:"Team", entries:"Entries", flags:"Flags", myDay:"My day", settings:"Settings",
+  addEntry:"Add entry", editEntry:"Edit entry", copyPrev:"Copy previous day", workType:"Work type", area:"Activity area", activity:"Activity", location:"Location", summary:"Summary of tasks performed / results achieved", save:"Save", cancel:"Cancel", del:"Delete", optional:"optional",
+  pickArea:"Choose an area", pickActivity:"Choose (optional)", otherAct:"Other (describe in summary)", needWT:"Choose a work type.", needArea:"Choose an activity area.", needSum:"Write a short summary of what you did.",
+  noEntries:"Nothing recorded for this day yet.", weekend:"Weekend", filled:"Filled", missing:"Missing", notYet:"Not yet", offDay:"Day off / leave", future:"Future", pending:"Not synced yet",
+  summaryDays:"Summary of days", totalWork:"Total working days", notFilled:"Weekdays not filled in", dlMine:"Download my timesheet (Excel)", periodWord:"Period",
+  asked:"asked", reply:"Reply", sendReply:"Send reply", answered:"Answered", resolved:"Resolved", open:"Needs your reply", noMsgs:"No messages. Questions from Faruk about your entries will appear here.", feedSub:"Questions and flags about your timesheet. Reply so Faruk can close them.", unsynced:"entries are still waiting to sync. Connect to the internet before signing out.", forDay:"About", noEntryDay:"(no entry for this day)", yourReply:"Your reply",
+  changePin:"Change PIN", oldPin:"Current PIN", newPin:"New PIN", pinChanged:"PIN changed.",
+  staff:"Staff", avgDone:"Average completion", missingDays:"Missing weekdays", openFlags:"Open flags", lastEntry:"Last entry", ofDays:"of", days:"days", noEntryYet:"no entries", flagThis:"Flag / ask", askAbout:"Ask about this day", sendFlag:"Send to", flagSent:"Sent. It is now in their messages.", qDetail:"Please add more detail.", qResult:"What was the result?", qWhere:"Where exactly was this?", qMissing:"No entry for this day: what happened?",
+  allPeople:"Everyone", allTypes:"All work types", allAreas:"All areas", search:"Search", export:"Download Excel", exportAll:"Download all timesheets (Excel)", statusAll:"All", resolve:"Resolve", reopen:"Reopen", followUp:"Ask again", awaitingReply:"Awaiting reply",
+  staffList:"Staff", addStaff:"Add person", name:"Full name", position:"Position", station:"Duty station", lineManager:"Direct line manager", role:"Role", roleStaff:"Staff", roleAdmin:"Project Director (sees everyone)", active:"Active", resetPin:"Reset PIN", pinResetDone:"PIN cleared. They will create a new one at next sign-in.", hasPin:"PIN set", noPin:"No PIN yet",
+  lists:"Lists", workTypes:"Work types", countsWork:"Counts as working day", areasActs:"Activity areas and activities (one per line)", addType:"Add work type", addArea:"Add area", saveLists:"Save lists", listsSaved:"Lists saved.", staffSaved:"Saved.",
+  demo:"Demo mode: data stays on this device only. Faruk's demo PIN is 1234. Connect Supabase (see the setup guide) to share timesheets.", netErr:"Could not reach the server. Your entries are kept on this phone and will sync later.", needOnline:"This needs an internet connection.", signedOut:"Your session ended. Please sign in again.",
+  back:"Back", periodOverview:"Period overview", entriesIn:"entries", flagFor:"Flag", details:"Details", wd:["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], wdLong:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"], months:["January","February","March","April","May","June","July","August","September","October","November","December"]},
+ pt: {appSub:"Folhas de horas", signIn:"Entrar", yourName:"O seu nome", choose:"Escolha o seu nome", pin:"PIN", createPin:"Crie o seu PIN (4 a 8 dígitos)", confirmPin:"Repita o PIN", firstTime:"Primeira vez: escolha um PIN que vai lembrar. Vai usá-lo sempre que entrar.",
+  wrongPin:"PIN errado. Tente outra vez.", locked:"Demasiadas tentativas. Aguarde 15 minutos ou peça ao Faruk para repor o seu PIN.", pinMismatch:"Os dois PINs não coincidem.", pinRule:"O PIN deve ter 4 a 8 dígitos.", signOut:"Sair", offline:"Sem rede", saved:"Guardado", waiting:"por sincronizar",
+  today:"Hoje", day:"Dia", period:"Período", feed:"Mensagens", account:"Conta", team:"Equipa", entries:"Registos", flags:"Pedidos", myDay:"O meu dia", settings:"Definições",
+  addEntry:"Adicionar registo", editEntry:"Editar registo", copyPrev:"Copiar dia anterior", workType:"Tipo de trabalho", area:"Área de actividade", activity:"Actividade", location:"Local", summary:"Resumo das tarefas realizadas / resultados alcançados", save:"Guardar", cancel:"Cancelar", del:"Apagar", optional:"opcional",
+  pickArea:"Escolha uma área", pickActivity:"Escolha (opcional)", otherAct:"Outra (descreva no resumo)", needWT:"Escolha o tipo de trabalho.", needArea:"Escolha a área de actividade.", needSum:"Escreva um breve resumo do que fez.",
+  noEntries:"Ainda nada registado para este dia.", weekend:"Fim de semana", filled:"Preenchido", missing:"Em falta", notYet:"Ainda não", offDay:"Folga / férias", future:"Futuro", pending:"Ainda não sincronizado",
+  summaryDays:"Resumo dos dias", totalWork:"Total de dias de trabalho", notFilled:"Dias úteis por preencher", dlMine:"Descarregar a minha folha (Excel)", periodWord:"Período",
+  asked:"perguntou", reply:"Responder", sendReply:"Enviar resposta", answered:"Respondido", resolved:"Resolvido", open:"Precisa da sua resposta", noMsgs:"Sem mensagens. As perguntas do Faruk sobre os seus registos aparecem aqui.", feedSub:"Perguntas e pedidos sobre a sua folha de horas. Responda para o Faruk poder fechá-los.", unsynced:"registos ainda por sincronizar. Ligue-se à internet antes de sair.", forDay:"Sobre", noEntryDay:"(sem registo neste dia)", yourReply:"A sua resposta",
+  changePin:"Mudar PIN", oldPin:"PIN actual", newPin:"Novo PIN", pinChanged:"PIN alterado.",
+  staff:"Pessoal", avgDone:"Preenchimento médio", missingDays:"Dias úteis em falta", openFlags:"Pedidos abertos", lastEntry:"Último registo", ofDays:"de", days:"dias", noEntryYet:"sem registos", flagThis:"Assinalar / perguntar", askAbout:"Perguntar sobre este dia", sendFlag:"Enviar a", flagSent:"Enviado. Já está nas mensagens da pessoa.", qDetail:"Por favor, acrescente mais detalhe.", qResult:"Qual foi o resultado?", qWhere:"Onde exactamente foi?", qMissing:"Sem registo neste dia: o que aconteceu?",
+  allPeople:"Todos", allTypes:"Todos os tipos", allAreas:"Todas as áreas", search:"Pesquisar", export:"Descarregar Excel", exportAll:"Descarregar todas as folhas (Excel)", statusAll:"Todos", resolve:"Resolver", reopen:"Reabrir", followUp:"Perguntar de novo", awaitingReply:"A aguardar resposta",
+  staffList:"Pessoal", addStaff:"Adicionar pessoa", name:"Nome completo", position:"Cargo", station:"Local de trabalho", lineManager:"Superior directo", role:"Função", roleStaff:"Pessoal", roleAdmin:"Director de Projecto (vê todos)", active:"Activo", resetPin:"Repor PIN", pinResetDone:"PIN apagado. A pessoa cria um novo no próximo acesso.", hasPin:"PIN definido", noPin:"Sem PIN",
+  lists:"Listas", workTypes:"Tipos de trabalho", countsWork:"Conta como dia de trabalho", areasActs:"Áreas de actividade e actividades (uma por linha)", addType:"Adicionar tipo", addArea:"Adicionar área", saveLists:"Guardar listas", listsSaved:"Listas guardadas.", staffSaved:"Guardado.",
+  demo:"Modo de demonstração: os dados ficam só neste dispositivo. PIN de demonstração do Faruk: 1234. Ligue o Supabase (ver guia) para partilhar as folhas.", netErr:"Não foi possível ligar ao servidor. Os registos ficam neste telemóvel e sincronizam depois.", needOnline:"Isto precisa de ligação à internet.", signedOut:"A sessão terminou. Entre outra vez.",
+  back:"Voltar", periodOverview:"Resumo do período", entriesIn:"registos", flagFor:"Pedido", details:"Detalhes", wd:["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"], wdLong:["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"], months:["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"]}
+};
+let lang = store.get("ts-lang", (navigator.language || "").toLowerCase().startsWith("pt") ? "pt" : "en");
+const t = k => (L[lang][k] ?? L.en[k] ?? k);
+const fmtDay = s => { const d = dt(s); return t("wdLong")[d.getDay()] + ", " + d.getDate() + " " + t("months")[d.getMonth()]; };
+const fmtShort = s => { const d = dt(s); return d.getDate() + " " + t("months")[d.getMonth()].slice(0, 3); };
+const fmtLong = s => { const d = dt(s); return d.getDate() + " " + t("months")[d.getMonth()] + " " + d.getFullYear(); };
+
+// ---------- backend (Supabase: one database function, ts_api; demo mode runs a local copy in the browser)
+const CFG = window.TS_CONFIG || {};
+const params = new URLSearchParams(location.search);
+const SB_URL = (params.get("sbUrl") || CFG.supabaseUrl || "").replace(/\/+$/, "");
+const SB_KEY = params.get("sbKey") || CFG.supabaseKey || "";
+const DEMO = !(SB_URL && SB_KEY);
+let demo = null;
+function demoBackend(){
+  if (demo) return demo;
+  let mem = null;
+  const env = GasMock.makeEnv({load: () => mem || store.get("ts-demo-db", null), save: d => { mem = d; store.set("ts-demo-db", d); }});
+  demo = window.TS_GAS(env.SpreadsheetApp, env.ContentService, env.Utilities, env.PropertiesService, env.LockService, env.CacheService, env.Session);
+  if (!store.get("ts-demo-ready", false)){ demo.setupWith_("1234"); store.set("ts-demo-ready", true); }
+  return demo;
+}
+async function call(req){
+  if (DEMO){ const b = demoBackend(); return JSON.parse(b.doPost({postData:{contents: JSON.stringify(req)}}).getContent()); }
+  const headers = {"Content-Type": "application/json", "apikey": SB_KEY};
+  if (SB_KEY.startsWith("eyJ")) headers.Authorization = "Bearer " + SB_KEY;   // legacy anon key (JWT); new publishable keys go in apikey only
+  const r = await fetch(SB_URL + "/rest/v1/rpc/ts_api", {method:"POST", headers, body: JSON.stringify({req})});
+  if (!r.ok) throw new Error("http_" + r.status);
+  return await r.json();
+}
+async function authed(action, extra){
+  const res = await call({action, staffId: S.session.staffId, token: S.session.token, ...(extra || {})});
+  if (!res.ok && res.error === "not_signed_in"){ signOut(true); toast(t("signedOut")); throw new Error("not_signed_in"); }
+  return res;
+}
+
+// ---------- state
+const S = {
+  session: store.get("ts-session", null), staff: [], lists: null, today: iso(new Date()),
+  me: null, entries: [], flags: [], outbox: [], tab: null, date: iso(new Date()), pStart: null, edit: null,
+  team: null, teamKey: "", person: null, filter: {who:"", wt:"", area:"", q:""}, flagFilter: "open", composing: null, editStaff: null, online: navigator.onLine
+};
+const cacheKey = () => "ts-cache-" + (S.session ? S.session.staffId : "");
+const outKey = () => "ts-outbox-" + (S.session ? S.session.staffId : "");
+function persist(){ if (!S.session) return; store.set(cacheKey(), {entries:S.entries, flags:S.flags, lists:S.lists, me:S.me, staff:S.staff}); store.set(outKey(), S.outbox); }
+const isAdmin = () => S.session && S.session.role === "admin";
+
+// ---------- periods and day status
+const psd = () => (S.lists && S.lists.periodStartDay) || 15;
+function periodStart(s){ const d = dt(s); let y = d.getFullYear(), m = d.getMonth(); if (d.getDate() < psd()){ m--; if (m < 0){ m = 11; y--; } } return y + "-" + pad(m + 1) + "-" + pad(psd()); }
+function periodEnd(start){ const d = dt(start); const e = new Date(d.getFullYear(), d.getMonth() + 1, psd()); e.setDate(e.getDate() - 1); return iso(e); }
+function shiftPeriod(start, n){ const d = dt(start); return iso(new Date(d.getFullYear(), d.getMonth() + n, psd())); }
+function daysIn(a, b){ const out = []; for (let s = a; s <= b; s = addDays(s, 1)) out.push(s); return out; }
+const periodLabel = start => fmtLong(start) + " – " + fmtLong(periodEnd(start));
+const isWeekend = s => { const g = dt(s).getDay(); return g === 0 || g === 6; };
+const wtInfo = name => (S.lists && S.lists.workTypes || []).find(w => w.name === name) || {name, working: true};
+const isWorking = name => !!wtInfo(name).working;
+function dayStatus(s, list){
+  const es = list.filter(e => e.date === s && !e.deleted);
+  if (es.length) return es.some(e => isWorking(e.workType)) ? "filled" : "offd";
+  if (s > S.today) return "future";
+  if (isWeekend(s)) return "weekend";
+  return "missing";
+}
+function periodStats(start, list){
+  const end = periodEnd(start), all = daysIn(start, end), upto = all.filter(s => s <= S.today);
+  const expected = upto.filter(s => !isWeekend(s)), filledWd = expected.filter(s => list.some(e => e.date === s && !e.deleted));
+  const byType = {}; all.forEach(s => { const types = new Set(list.filter(e => e.date === s && !e.deleted).map(e => e.workType || "?")); types.forEach(w => byType[w] = (byType[w] || 0) + 1); });
+  const working = all.filter(s => list.some(e => e.date === s && !e.deleted && isWorking(e.workType))).length;
+  const last = list.filter(e => !e.deleted).map(e => e.date).sort().pop() || "";
+  return {all, expected: expected.length, filled: filledWd.length, missing: expected.length - filledWd.length, missingDays: expected.filter(s => !filledWd.includes(s)), byType, working, last};
+}
+
+// ---------- sync for staff entries (works offline: changes queue on the phone until the server confirms)
+function setSync(){
+  const el = $("#sync"); if (!S.session){ el.hidden = true; return; }
+  el.hidden = false; const n = S.outbox.length;
+  el.className = "sync" + (!S.online && !DEMO ? " off" : n ? " pending" : "");
+  el.textContent = !S.online && !DEMO ? t("offline") + (n ? " · " + n : "") : n ? n + " " + t("waiting") : t("saved");
+}
+let flushing = false;
+async function flush(){
+  if (flushing || !S.outbox.length || !S.session) { setSync(); return; }
+  flushing = true; setSync();
+  try {
+    const batch = S.outbox.slice(0, 50);
+    const res = await authed("saveEntries", {entries: batch});
+    if (res.ok){ const ok = new Set(res.saved.map(x => x.id).concat(res.skipped || [])); S.outbox = S.outbox.filter(x => !ok.has(x.id)); S.online = true; persist(); }
+  } catch(e){ if (e.message !== "not_signed_in") S.online = false; }
+  flushing = false; setSync();
+  if (S.outbox.length && S.online) setTimeout(flush, 500);
+}
+function saveLocal(entry){
+  entry.updatedAt = new Date().toISOString();
+  const i = S.entries.findIndex(e => e.id === entry.id); if (i >= 0) S.entries[i] = entry; else S.entries.push(entry);
+  const j = S.outbox.findIndex(e => e.id === entry.id); if (j >= 0) S.outbox[j] = entry; else S.outbox.push(entry);
+  persist(); flush();
+}
+async function loadMine(){
+  try {
+    const res = await authed("myData", {});
+    if (!res.ok) return;
+    S.online = true; S.me = res.me; S.lists = res.lists || S.lists; S.today = res.today || S.today;
+    const pend = new Map(S.outbox.map(e => [e.id, e]));
+    S.entries = res.entries.filter(e => !pend.has(e.id)).concat([...pend.values()]);
+    S.flags = res.flags; persist(); flush(); render();
+  } catch(e){ if (e.message !== "not_signed_in"){ S.online = false; setSync(); } }
+}
+window.addEventListener("online", () => { S.online = true; flush(); loadMine(); });
+window.addEventListener("offline", () => { S.online = false; setSync(); });
+setInterval(() => { if (S.session && S.outbox.length) flush(); }, 60000);
+
+// ---------- sign in / out
+async function boot(){
+  $("#langBtn").textContent = lang === "pt" ? "PT | EN" : "EN | PT"; document.documentElement.lang = lang;
+  $("#brandSub").textContent = t("appSub");
+  $("#demoBanner").hidden = !DEMO; $("#demoText").textContent = t("demo");
+  if (S.session){
+    const c = store.get(cacheKey(), null); if (c){ S.entries = c.entries || []; S.flags = c.flags || []; S.lists = c.lists; S.me = c.me; S.staff = c.staff || []; }
+    S.outbox = store.get(outKey(), []);
+    S.tab = S.tab || (isAdmin() ? "team" : "day"); render(); loadMine();
+    try { const b = await call({action:"bootstrap"}); if (b.ok){ S.staff = b.staff; S.lists = S.lists || b.lists; persist(); } } catch(e){}
+    return;
+  }
+  renderLogin();
+  try { const b = await call({action:"bootstrap"}); if (b.ok){ S.staff = b.staff; S.lists = b.lists; S.today = b.today || S.today; store.set("ts-staff", b.staff); renderLogin(); } }
+  catch(e){ S.staff = store.get("ts-staff", []); renderLogin(t("netErr")); }
+}
+function renderLogin(msg){
+  $("#tabs").hidden = true; $("#whoBtn").hidden = true; setSync();
+  const sel = store.get("ts-last-user", ""), person = S.staff.find(s => s.id === sel);
+  const first = person && !person.hasPin;
+  $("#main").innerHTML = `<div class="login"><div class="logo"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="var(--wash)"/><path d="M20 7c-5 4-7 8-7 12 0 3 2 5 7 5s7-2 7-5c0-4-2-8-7-12z" fill="var(--brand-2)"/><path d="M20 24v9M20 27c-3 1-5 3-6 6M20 27c3 1 5 3 6 6" stroke="var(--brand)" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg><div><h1>MozBlue</h1><div class="muted">${esc(t("appSub"))} · Blue Forest</div></div></div>
+    <form class="card" id="loginForm" autocomplete="off" style="display:flex;flex-direction:column;gap:14px">
+      <label class="f">${esc(t("yourName"))}<select id="lgWho" required><option value="">${esc(t("choose"))}</option>${S.staff.filter(s => s.active !== false).map(s => `<option value="${esc(s.id)}"${s.id === sel ? " selected" : ""}>${esc(s.name)}</option>`).join("")}</select></label>
+      ${first ? `<p class="small muted" style="margin:0">${esc(t("firstTime"))}</p>
+        <label class="f">${esc(t("createPin"))}<input id="lgPin" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" required></label>
+        <label class="f">${esc(t("confirmPin"))}<input id="lgPin2" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" required></label>`
+      : `<label class="f">${esc(t("pin"))}<input id="lgPin" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" required></label>`}
+      <p class="small" id="lgMsg" style="margin:0;color:var(--bad)">${esc(msg || "")}</p>
+      <button class="btn primary" type="submit">${esc(t("signIn"))}</button>
+    </form></div>`;
+  $("#lgWho").onchange = () => { store.set("ts-last-user", $("#lgWho").value); renderLogin(); };
+  $("#loginForm").onsubmit = async ev => {
+    ev.preventDefault(); const who = $("#lgWho").value, pin = $("#lgPin").value.trim(); if (!who) return;
+    const p = S.staff.find(s => s.id === who), msgEl = $("#lgMsg");
+    if (!/^\d{4,8}$/.test(pin)){ msgEl.textContent = t("pinRule"); return; }
+    if (p && !p.hasPin && pin !== $("#lgPin2").value.trim()){ msgEl.textContent = t("pinMismatch"); return; }
+    try {
+      const res = await call(p && !p.hasPin ? {action:"login", staffId: who, newPin: pin} : {action:"login", staffId: who, pin});
+      if (!res.ok){
+        if (res.error === "pin_already_set"){ p.hasPin = true; renderLogin(); return; }
+        if (res.error === "pin_not_set"){ p.hasPin = false; renderLogin(); return; }
+        msgEl.textContent = res.error === "locked" ? t("locked") : t("wrongPin"); return; }
+      S.session = {staffId: who, token: res.token, role: res.me.role, name: res.me.name}; store.set("ts-session", S.session); store.set("ts-last-user", who);
+      S.me = res.me; S.tab = isAdmin() ? "team" : "day"; S.date = S.today; boot();
+    } catch(e){ msgEl.textContent = t("netErr"); }
+  };
+}
+function signOut(force){ if (!force && S.session && S.outbox.length){ toast(S.outbox.length + " " + t("unsynced")); flush(); return; } store.del("ts-session"); S.session = null; S.entries = []; S.flags = []; S.team = null; S.tab = null; boot(); }
+
+// ---------- tabs
+const ICON = {
+  day:'<path d="M4 6h16v14H4z"/><path d="M4 10h16M9 3v4M15 3v4"/>', period:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 13h2M12 13h2M16 13h2M8 17h2M12 17h2"/>',
+  feed:'<path d="M4 5h16v11H8l-4 4z"/>', account:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>', team:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.5-5.5 6.5-5.5s5.5 2 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.5c2.5 0 4.5 1.6 5.5 4.5"/>',
+  entries:'<path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/>', flags:'<path d="M5 21V4h11l-2 4 2 4H5"/>', settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>'
+};
+function renderTabs(){
+  const unread = S.flags.filter(f => f.status === "open").length;
+  const openTeam = S.team ? S.team.flags.filter(f => f.status === "answered").length : 0;
+  const tabs = isAdmin() ? [["team",t("team")],["entries",t("entries")],["flags",t("flags"),openTeam],["day",t("myDay")],["settings",t("settings")]]
+    : [["day",t("day")],["period",t("period")],["feed",t("feed"),unread],["account",t("account")]];
+  $("#tabsIn").innerHTML = tabs.map(([k,l,b]) => `<button type="button" data-tab="${k}" aria-current="${S.tab === k || (k === "day" && S.tab === "period" && isAdmin()) || (k === "team" && S.tab === "person") ? "page" : "false"}"><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[k === "day" && isAdmin() ? "day" : k]}</svg><span>${esc(l)}</span>${b ? `<span class="badge">${b}</span>` : ""}</button>`).join("");
+  $("#tabs").hidden = false;
+  $$("#tabsIn [data-tab]").forEach(b => b.onclick = () => { S.tab = b.dataset.tab; S.edit = null; S.composing = null; if (S.tab === "day") S.date = S.date || S.today; render(); window.scrollTo(0,0); });
+  $("#whoBtn").hidden = false; $("#whoBtn").textContent = (S.session.name || "") + " · " + t("signOut");
+}
+
+// ---------- render
+function render(){
+  if (!S.session){ renderLogin(); return; }
+  setSync(); renderTabs();
+  const v = S.tab;
+  if (v === "day") renderDay(); else if (v === "period") renderPeriod(); else if (v === "feed") renderFeed(); else if (v === "account") renderAccount();
+  else if (v === "team") renderTeam(); else if (v === "person") renderPerson(); else if (v === "entries") renderEntries(); else if (v === "flags") renderFlags(); else if (v === "settings") renderSettings();
+}
+
+// ---------- staff: day
+function entryCard(e, flags){
+  const off = !isWorking(e.workType), pend = S.outbox.some(x => x.id === e.id);
+  return `<div class="card entry${off ? " offday" : ""}"><div class="top"><span class="chip ${off ? "off" : "ok"}">${esc(e.workType || "?")}</span><span class="row" style="gap:8px">${pend ? `<span class="pend">${esc(t("pending"))}</span>` : ""}<button class="btn sm" data-act="editEntry" data-id="${esc(e.id)}">${esc(t("editEntry"))}</button></span></div>
+    ${e.area ? `<div class="area">${esc(e.area)}</div>` : ""}<div class="meta">${[e.activity, e.location].filter(Boolean).map(esc).join(" · ")}</div>
+    ${e.summary ? `<div class="sum">${esc(e.summary)}</div>` : ""}${flags.map(flagBox).join("")}</div>`;
+}
+function flagBox(f){
+  const open = f.status === "open";
+  return `<div class="flagbox${f.status === "resolved" ? " done" : ""}"><div class="who">${esc(f.createdBy)} ${esc(t("asked"))} · ${esc(fmtShort((f.createdAt || "").slice(0,10) || S.today))} · <span class="chip ${open ? "warn" : f.status === "answered" ? "info" : "mute"}">${esc(open ? t("open") : t(f.status))}</span></div>
+    <div class="q">${esc(f.message)}</div>${f.reply ? `<div class="a">${esc(f.reply)}</div>` : ""}
+    ${open ? `<textarea data-reply="${esc(f.id)}" placeholder="${esc(t("yourReply"))}"></textarea><div class="row" style="margin-top:6px"><button class="btn sm primary" data-act="sendReply" data-id="${esc(f.id)}">${esc(t("sendReply"))}</button></div>` : ""}</div>`;
+}
+function renderDay(){
+  const d = S.date || S.today, mine = S.entries.filter(e => e.date === d && !e.deleted), st = dayStatus(d, S.entries);
+  const dayFlags = S.flags.filter(f => f.entryDate === d), loose = dayFlags.filter(f => !f.entryId || !mine.some(e => e.id === f.entryId));
+  const stChip = {filled:["ok",t("filled")], offd:["off",t("offDay")], missing:["bad",t("missing")], weekend:["mute",t("weekend")], future:["mute",t("future")]}[st];
+  const editing = S.edit;
+  $("#main").innerHTML = `<div class="dayhead"><button class="nav" data-act="shiftDay" data-n="-1" aria-label="Previous day">‹</button><div class="mid"><b>${esc(fmtDay(d))}</b><span>${dt(d).getFullYear()} · <span class="chip ${stChip[0]}">${esc(stChip[1])}</span></span></div><button class="nav" data-act="shiftDay" data-n="1" aria-label="Next day">›</button></div>
+    <div class="daytools"><button class="btn sm" data-act="goToday">${esc(t("today"))}</button><input type="date" id="pickDate" value="${d}" aria-label="Date">${isAdmin() ? `<button class="btn sm" data-act="tab" data-v="period">${esc(t("period"))}</button>` : ""}</div>
+    ${loose.map(f => `<div class="card">${flagBox(f)}</div>`).join("")}
+    ${mine.map(e => editing && editing.id === e.id ? entryForm(editing) : entryCard(e, dayFlags.filter(f => f.entryId === e.id))).join("") || (editing ? "" : `<div class="empty" style="text-align:center">${esc(t("noEntries"))}</div>`)}
+    ${editing && !mine.some(e => e.id === editing.id) ? entryForm(editing) : ""}
+    ${editing ? "" : `<div class="row" style="justify-content:center;margin-top:8px"><button class="btn primary" data-act="newEntry">+ ${esc(t("addEntry"))}</button>${mine.length ? "" : `<button class="btn" data-act="copyPrev">${esc(t("copyPrev"))}</button>`}</div>`}`;
+  $("#pickDate").onchange = ev => { if (ev.target.value){ S.date = ev.target.value; S.edit = null; render(); } };
+  if (editing) wireForm();
+}
+function entryForm(e){
+  const L2 = S.lists || {workTypes:[], areas:[]}, off = e.workType && !isWorking(e.workType), area = L2.areas.find(a => a.name === e.area);
+  const locs = [...new Set(S.entries.map(x => x.location).filter(Boolean))].slice(-30);
+  return `<form class="card" id="entryForm" style="display:flex;flex-direction:column;gap:12px">
+    <h3>${esc(S.entries.some(x => x.id === e.id) ? t("editEntry") : t("addEntry"))}</h3>
+    <label class="f">${esc(t("workType"))}<select id="fWT" required><option value=""></option>${L2.workTypes.map(w => `<option${w.name === e.workType ? " selected" : ""}>${esc(w.name)}</option>`).join("")}</select></label>
+    <div class="g2"${off ? " hidden" : ""} id="areaRow"><label class="f">${esc(t("area"))}<select id="fArea"><option value="">${esc(t("pickArea"))}</option>${L2.areas.map(a => `<option${a.name === e.area ? " selected" : ""}>${esc(a.name)}</option>`).join("")}</select></label>
+      <label class="f">${esc(t("activity"))}<select id="fAct"><option value="">${esc(t("pickActivity"))}</option>${(area ? area.activities : []).map(x => `<option${x === e.activity ? " selected" : ""}>${esc(x)}</option>`).join("")}${e.activity && area && !area.activities.includes(e.activity) ? `<option selected>${esc(e.activity)}</option>` : ""}</select></label></div>
+    <label class="f">${esc(t("location"))}<input id="fLoc" list="locList" value="${esc(e.location || "")}" autocomplete="off"><datalist id="locList">${locs.map(l => `<option value="${esc(l)}">`).join("")}</datalist></label>
+    <label class="f">${esc(t("summary"))}${off ? ` (${esc(t("optional"))})` : ""}<textarea id="fSum">${esc(e.summary || "")}</textarea></label>
+    <p class="small" id="fMsg" style="margin:0;color:var(--bad)"></p>
+    <div class="row"><button class="btn primary" type="submit">${esc(t("save"))}</button><button class="btn" type="button" data-act="cancelEdit">${esc(t("cancel"))}</button><span class="grow"></span>${S.entries.some(x => x.id === e.id) ? `<button class="btn danger" type="button" data-act="delEntry" data-id="${esc(e.id)}">${esc(t("del"))}</button>` : ""}</div></form>`;
+}
+function wireForm(){
+  const keep = () => { S.edit = {...S.edit, workType: $("#fWT").value, area: $("#fArea").value, activity: $("#fAct").value, location: $("#fLoc").value, summary: $("#fSum").value}; };
+  $("#fWT").onchange = () => { keep(); renderDay(); $("#fWT").focus(); };
+  $("#fArea").onchange = () => { keep(); S.edit.activity = ""; renderDay(); $("#fArea").focus(); };
+  $("#entryForm").onsubmit = ev => {
+    ev.preventDefault(); keep(); const e = S.edit, msg = $("#fMsg");
+    if (!e.workType){ msg.textContent = t("needWT"); return; }
+    const off = !isWorking(e.workType);
+    if (!off && !e.area){ msg.textContent = t("needArea"); return; }
+    if (!off && !e.summary.trim()){ msg.textContent = t("needSum"); return; }
+    if (off){ e.area = ""; e.activity = ""; }
+    saveLocal({id: e.id, date: e.date, workType: e.workType, area: e.area, activity: e.activity, location: e.location.trim(), summary: e.summary.trim(), deleted: false});
+    S.edit = null; toast(t("saved")); render();
+  };
+  setTimeout(() => { const f = $("#entryForm"); if (f) f.scrollIntoView({block:"nearest", behavior:"smooth"}); }, 30);
+}
+
+// ---------- staff: period
+function calendar(start, list, flags, onClickAct){
+  const end = periodEnd(start), days = daysIn(start, end), first = (dt(start).getDay() + 6) % 7;
+  return `<div class="cal">${t("wd").map(w => `<div class="wd">${esc(w)}</div>`).join("")}${"<div class='pad'></div>".repeat(first)}${days.map(s => { const st = dayStatus(s, list), fl = flags.some(f => f.entryDate === s && f.status !== "resolved");
+    return `<button type="button" class="d ${st}${s === S.today ? " today" : ""}" data-act="${onClickAct}" data-d="${s}" title="${esc(fmtDay(s))}">${dt(s).getDate()}<small>${s.slice(8) === "01" || s === start ? esc(t("months")[dt(s).getMonth()].slice(0,3)) : ""}</small>${fl ? '<i class="dot"></i>' : ""}</button>`; }).join("")}</div>
+    <div class="legend"><span><i style="background:var(--ok-wash);border:1px solid var(--ok)"></i>${esc(t("filled"))}</span><span><i style="background:var(--off-wash);border:1px solid var(--off)"></i>${esc(t("offDay"))}</span><span><i style="background:var(--bad-wash);border:1px solid var(--bad)"></i>${esc(t("missing"))}</span><span><i style="background:var(--warn)"></i>${esc(t("flags"))}</span></div>`;
+}
+function summaryTable(st){
+  const L2 = S.lists || {workTypes:[]}, names = L2.workTypes.map(w => w.name).concat(Object.keys(st.byType).filter(k => !L2.workTypes.some(w => w.name === k)));
+  return `<table class="sumtable">${names.map(n => `<tr><td>${esc(n)}</td><td>${st.byType[n] || 0}</td></tr>`).join("")}<tr class="tot"><td>${esc(t("totalWork"))}</td><td>${st.working}</td></tr><tr><td>${esc(t("notFilled"))}</td><td style="color:${st.missing ? "var(--bad)" : "inherit"}">${st.missing}</td></tr></table>`;
+}
+function renderPeriod(){
+  S.pStart = S.pStart || periodStart(S.today); const st = periodStats(S.pStart, S.entries);
+  $("#main").innerHTML = `<h1 class="pt">${esc(t("periodOverview"))}</h1>
+    <div class="pnav"><button class="btn sm" data-act="shiftPeriod" data-n="-1">‹</button><b>${esc(periodLabel(S.pStart))}</b><button class="btn sm" data-act="shiftPeriod" data-n="1">›</button></div>
+    <div class="card">${calendar(S.pStart, S.entries, S.flags, "openDay")}</div>
+    <div class="card"><h3>${esc(t("summaryDays"))}</h3>${summaryTable(st)}<div class="row" style="margin-top:14px"><button class="btn" data-act="dlMine">${esc(t("dlMine"))}</button></div></div>`;
+}
+
+// ---------- staff: messages
+function renderFeed(){
+  const fl = S.flags.slice().sort((a,b) => (a.status === "open" ? 0 : 1) - (b.status === "open" ? 0 : 1) || String(b.createdAt).localeCompare(String(a.createdAt)));
+  $("#main").innerHTML = `<h1 class="pt">${esc(t("feed"))}</h1><p class="sub">${esc(t("feedSub"))}</p>` + (fl.length ? fl.map(f => { const e = S.entries.find(x => x.id === f.entryId);
+    return `<div class="card"><div class="row small muted" style="justify-content:space-between"><span>${esc(t("forDay"))} <a href="#" data-act="openDay" data-d="${esc(f.entryDate)}">${esc(fmtDay(f.entryDate))}</a></span></div>
+      <div class="small" style="margin:4px 0 0;color:var(--ink-2)">${e ? esc((e.workType || "") + (e.area ? " · " + e.area : "") + (e.summary ? ": " + e.summary.slice(0, 140) : "")) : esc(t("noEntryDay"))}</div>${flagBox(f)}</div>`; }).join("") : `<div class="empty">${esc(t("noMsgs"))}</div>`);
+  const unseen = S.flags.filter(f => !f.staffSeen).map(f => f.id);
+  if (unseen.length){ S.flags.forEach(f => f.staffSeen = true); persist(); authed("markSeen", {ids: unseen}).catch(() => {}); }
+}
+
+// ---------- staff: account
+function renderAccount(){
+  const me = S.me || {};
+  $("#main").innerHTML = `<h1 class="pt">${esc(me.name || S.session.name)}</h1><p class="sub">${esc([me.position, me.station].filter(Boolean).join(" · "))}${me.lineManager ? " · " + esc(t("lineManager")) + ": " + esc(me.lineManager) : ""}</p>
+    ${pinCard()}<div class="card"><button class="btn danger" data-act="signOut">${esc(t("signOut"))}</button></div>`;
+  wirePin();
+}
+function pinCard(){ return `<form class="card" id="pinForm" style="display:flex;flex-direction:column;gap:12px"><h3>${esc(t("changePin"))}</h3><div class="g2"><label class="f">${esc(t("oldPin"))}<input id="pOld" class="pin" type="password" inputmode="numeric" maxlength="8"></label><label class="f">${esc(t("newPin"))}<input id="pNew" class="pin" type="password" inputmode="numeric" maxlength="8"></label></div><p class="small" id="pMsg" style="margin:0;color:var(--bad)"></p><div><button class="btn" type="submit">${esc(t("changePin"))}</button></div></form>`; }
+function wirePin(){ $("#pinForm").onsubmit = async ev => { ev.preventDefault(); const o = $("#pOld").value.trim(), n = $("#pNew").value.trim();
+  if (!/^\d{4,8}$/.test(n)){ $("#pMsg").textContent = t("pinRule"); return; }
+  try { const r = await authed("changePin", {oldPin: o, newPin: n}); if (!r.ok){ $("#pMsg").textContent = t("wrongPin"); return; } S.session.token = r.token; store.set("ts-session", S.session); toast(t("pinChanged")); render(); } catch(e){ $("#pMsg").textContent = t("needOnline"); } }; }
+
+// ---------- Project Director: team
+async function loadTeam(start, force){
+  const key = start;
+  if (!force && S.team && S.teamKey === key) return S.team;
+  const res = await authed("teamData", {from: start, to: periodEnd(start)});
+  if (res.ok){ S.team = res; S.teamKey = key; S.staff = res.staff; S.lists = res.lists || S.lists; S.today = res.today || S.today; persist(); }
+  return S.team;
+}
+function teamPeople(){ return (S.team ? S.team.staff : S.staff).filter(s => s.active !== false && (s.role !== "admin" || S.team.entries.some(e => e.staffId === s.id))); }
+async function renderTeam(force){
+  S.pStart = S.pStart || periodStart(S.today);
+  $("#main").innerHTML = `<h1 class="pt">${esc(t("team"))}</h1><div class="pnav"><button class="btn sm" data-act="shiftPeriod" data-n="-1">‹</button><b>${esc(periodLabel(S.pStart))}</b><button class="btn sm" data-act="shiftPeriod" data-n="1">›</button></div><div id="teamBody"><div class="empty">…</div></div>`;
+  try { await loadTeam(S.pStart, force); } catch(e){ $("#teamBody").innerHTML = `<div class="card">${esc(t("needOnline"))}</div>`; return; }
+  if (S.tab !== "team") return;
+  const ppl = teamPeople(), stats = ppl.map(p => ({p, st: periodStats(S.pStart, S.team.entries.filter(e => e.staffId === p.id))}));
+  const avg = stats.length ? Math.round(stats.reduce((a, x) => a + (x.st.expected ? x.st.filled / x.st.expected : 1), 0) / stats.length * 100) : 0;
+  const miss = stats.reduce((a, x) => a + x.st.missing, 0), open = S.team.flags.filter(f => f.status !== "resolved").length;
+  $("#teamBody").innerHTML = `<div class="kpis"><div class="kpi"><b>${ppl.length}</b><span>${esc(t("staff"))}</span></div><div class="kpi"><b>${avg}%</b><span>${esc(t("avgDone"))}</span></div><div class="kpi${miss ? " alert" : ""}"><b>${miss}</b><span>${esc(t("missingDays"))}</span></div><div class="kpi"><b>${open}</b><span>${esc(t("openFlags"))}</span></div></div>
+    <div class="card">${stats.sort((a,b) => b.st.missing - a.st.missing || a.p.name.localeCompare(b.p.name)).map(({p, st}) => { const fo = S.team.flags.filter(f => f.staffId === p.id && f.status !== "resolved"), ans = fo.filter(f => f.status === "answered").length;
+      return `<div class="person" data-act="openPerson" data-id="${esc(p.id)}"><span class="av">${esc(p.name.split(/\s+/).map(w => w[0]).join("").slice(0,2))}</span><span><b>${esc(p.name)}</b><div class="meta">${esc(p.position || "")}</div><div class="bar"><i style="width:${st.expected ? Math.round(st.filled / st.expected * 100) : 0}%"></i></div></span>
+        <span class="r"><span class="mono">${st.filled}/${st.expected} ${esc(t("days"))}</span>${st.missing ? `<span class="chip bad">${st.missing} ${esc(t("missing").toLowerCase())}</span>` : `<span class="chip ok">${esc(t("filled"))}</span>`}${fo.length ? `<span class="chip ${ans ? "info" : "warn"}">${fo.length} ${esc(t("flags").toLowerCase())}</span>` : ""}<span class="small muted">${esc(t("lastEntry"))}: ${st.last ? esc(fmtShort(st.last)) : esc(t("noEntryYet"))}</span></span></div>`; }).join("")}</div>
+    <div class="row"><button class="btn" data-act="exportAll">${esc(t("exportAll"))}</button></div>`;
+}
+function entryRow(e, p, opts){
+  const fl = S.team.flags.filter(f => (e.id && f.entryId === e.id) || (!e.id && !f.entryId && f.staffId === p.id && f.entryDate === e.date));
+  const key = e.id || ("miss:" + p.id + ":" + e.date), composing = S.composing === key;
+  return `<div class="erow${e.id ? "" : " miss"}"><div class="dt"><b>${dt(e.date).getDate()} ${esc(t("months")[dt(e.date).getMonth()].slice(0,3))}</b>${esc(t("wd")[(dt(e.date).getDay() + 6) % 7])}${opts && opts.who ? `<div style="margin-top:4px;color:var(--ink-2)">${esc(p.name.split(" ")[0])}</div>` : ""}</div>
+    <div class="txt">${e.id ? `<div class="l1">${esc(e.workType)}${e.area ? " · " + esc(e.area) : ""}</div><div class="l2">${[e.activity, e.location].filter(Boolean).map(esc).join(" · ")}</div>${e.summary ? `<div class="l3">${esc(e.summary)}</div>` : ""}` : `<div class="l1">${esc(t("missing"))}</div>`}
+      ${fl.map(f => `<div class="flagbox${f.status === "resolved" ? " done" : ""}"><div class="who">${esc(f.createdBy)} · ${esc(fmtShort((f.createdAt || "").slice(0,10)))} · <span class="chip ${f.status === "open" ? "warn" : f.status === "answered" ? "info" : "mute"}">${esc(f.status === "open" ? t("awaitingReply") : t(f.status))}</span></div><div class="q">${esc(f.message)}</div>${f.reply ? `<div class="a">${esc(f.reply)}</div>` : ""}<div class="row" style="margin-top:6px">${f.status !== "resolved" ? `<button class="btn sm" data-act="resolveFlag" data-id="${esc(f.id)}">${esc(t("resolve"))}</button>` : `<button class="btn sm ghost" data-act="reopenFlag" data-id="${esc(f.id)}">${esc(t("reopen"))}</button>`}</div></div>`).join("")}
+      ${composing ? `<div class="compose"><div class="quick">${(e.id ? ["qDetail","qResult","qWhere"] : ["qMissing"]).map(q => `<button type="button" data-act="quickQ" data-q="${esc(t(q))}">${esc(t(q))}</button>`).join("")}</div><textarea id="flagText" placeholder="${esc(t("askAbout"))}"></textarea><div class="row"><button class="btn sm primary" data-act="sendFlag" data-entry="${esc(e.id)}" data-staff="${esc(p.id)}" data-date="${esc(e.date)}">${esc(t("sendFlag"))} ${esc(p.name.split(" ")[0])}</button><button class="btn sm" data-act="cancelFlag">${esc(t("cancel"))}</button></div></div>` : ""}</div>
+    <div class="act">${composing ? "" : `<button class="btn sm" data-act="composeFlag" data-key="${esc(key)}">${esc(t("flagThis"))}</button>`}</div></div>`;
+}
+async function renderPerson(){
+  try { await loadTeam(S.pStart); } catch(e){ $("#main").innerHTML = `<div class="card">${esc(t("needOnline"))}</div>`; return; }
+  const p = S.team.staff.find(s => s.id === S.person); if (!p){ S.tab = "team"; render(); return; }
+  const list = S.team.entries.filter(e => e.staffId === p.id), st = periodStats(S.pStart, list), flags = S.team.flags.filter(f => f.staffId === p.id);
+  const rows = st.all.filter(s => s <= S.today || list.some(e => e.date === s)).reverse().map(s => { const es = list.filter(e => e.date === s); if (es.length) return es.map(e => entryRow(e, p)).join(""); if (!isWeekend(s)) return entryRow({date: s}, p); return ""; }).join("");
+  $("#main").innerHTML = `<button class="back" data-act="tab" data-v="team">‹ ${esc(t("team"))}</button><h1 class="pt" style="margin-top:6px">${esc(p.name)}</h1><p class="sub">${esc([p.position, p.station].filter(Boolean).join(" · "))}${p.lineManager ? " · " + esc(t("lineManager")) + ": " + esc(p.lineManager) : ""}</p>
+    <div class="pnav"><button class="btn sm" data-act="shiftPeriod" data-n="-1">‹</button><b>${esc(periodLabel(S.pStart))}</b><button class="btn sm" data-act="shiftPeriod" data-n="1">›</button></div>
+    <div class="g2" style="align-items:start"><div class="card">${calendar(S.pStart, list, flags, "jumpRow")}</div><div class="card"><h3>${esc(t("summaryDays"))}</h3>${summaryTable(st)}<div class="row" style="margin-top:14px"><button class="btn" data-act="exportPerson" data-id="${esc(p.id)}">${esc(t("export"))}</button></div></div></div>
+    <div class="card" id="personRows">${rows || `<div class="empty">${esc(t("noEntryYet"))}</div>`}</div>`;
+  if (S.composing) setTimeout(() => { const ta = $("#flagText"); if (ta){ ta.focus(); ta.scrollIntoView({block:"center"}); } }, 30);
+}
+async function renderEntries(){
+  S.pStart = S.pStart || periodStart(S.today);
+  $("#main").innerHTML = `<h1 class="pt">${esc(t("entries"))}</h1><div class="pnav"><button class="btn sm" data-act="shiftPeriod" data-n="-1">‹</button><b>${esc(periodLabel(S.pStart))}</b><button class="btn sm" data-act="shiftPeriod" data-n="1">›</button></div><div id="eBody"><div class="empty">…</div></div>`;
+  try { await loadTeam(S.pStart); } catch(e){ $("#eBody").innerHTML = `<div class="card">${esc(t("needOnline"))}</div>`; return; }
+  if (S.tab !== "entries") return;
+  const F = S.filter, L2 = S.lists || {workTypes:[], areas:[]};
+  $("#eBody").innerHTML = `<div class="filters"><select id="fiWho"><option value="">${esc(t("allPeople"))}</option>${S.team.staff.map(s => `<option value="${esc(s.id)}"${F.who === s.id ? " selected" : ""}>${esc(s.name)}</option>`).join("")}</select>
+    <select id="fiWT"><option value="">${esc(t("allTypes"))}</option>${L2.workTypes.map(w => `<option${F.wt === w.name ? " selected" : ""}>${esc(w.name)}</option>`).join("")}</select>
+    <select id="fiArea"><option value="">${esc(t("allAreas"))}</option>${L2.areas.map(a => `<option${F.area === a.name ? " selected" : ""}>${esc(a.name)}</option>`).join("")}</select>
+    <input id="fiQ" placeholder="${esc(t("search"))}" value="${esc(F.q)}"></div><div class="card" id="eList"></div><div class="row"><button class="btn" data-act="exportFiltered">${esc(t("export"))}</button></div>`;
+  const draw = () => { const list = filteredEntries();
+    $("#eList").innerHTML = list.length ? `<div class="small muted" style="margin-bottom:6px">${list.length} ${esc(t("entriesIn"))}</div>` + list.map(e => entryRow(e, S.team.staff.find(s => s.id === e.staffId) || {id:e.staffId, name:e.staffId}, {who:true})).join("") : `<div class="empty">—</div>`; };
+  ["#fiWho","#fiWT","#fiArea"].forEach(id => $(id).onchange = () => { S.filter = {who:$("#fiWho").value, wt:$("#fiWT").value, area:$("#fiArea").value, q:$("#fiQ").value}; draw(); });
+  $("#fiQ").oninput = () => { S.filter.q = $("#fiQ").value; draw(); };
+  draw();
+}
+function filteredEntries(){
+  const F = S.filter, q = F.q.toLowerCase();
+  return S.team.entries.filter(e => (!F.who || e.staffId === F.who) && (!F.wt || e.workType === F.wt) && (!F.area || e.area === F.area) && (!q || [e.summary, e.location, e.activity, e.area, e.workType].join(" ").toLowerCase().includes(q))).sort((a,b) => b.date.localeCompare(a.date) || a.staffId.localeCompare(b.staffId));
+}
+async function renderFlags(){
+  $("#main").innerHTML = `<h1 class="pt">${esc(t("flags"))}</h1><div class="segs">${[["open",t("awaitingReply")],["answered",t("answered")],["resolved",t("resolved")],["",t("statusAll")]].map(([k,l]) => `<button type="button" data-act="flagFilter" data-v="${k}" aria-pressed="${S.flagFilter === k}">${esc(l)}</button>`).join("")}</div><div id="fBody"><div class="empty">…</div></div>`;
+  try { await loadTeam(S.pStart || periodStart(S.today)); } catch(e){ $("#fBody").innerHTML = `<div class="card">${esc(t("needOnline"))}</div>`; return; }
+  if (S.tab !== "flags") return;
+  const fl = S.team.flags.filter(f => !S.flagFilter || f.status === S.flagFilter).sort((a,b) => String(b.repliedAt || b.createdAt).localeCompare(String(a.repliedAt || a.createdAt)));
+  $("#fBody").innerHTML = fl.length ? fl.map(f => { const p = S.team.staff.find(s => s.id === f.staffId) || {name: f.staffId};
+    return `<div class="card"><div class="row" style="justify-content:space-between"><b>${esc(p.name)}</b><a href="#" class="small" data-act="openPerson" data-id="${esc(f.staffId)}" data-d="${esc(f.entryDate)}">${esc(fmtDay(f.entryDate))}</a></div>
+      <div class="flagbox${f.status === "resolved" ? " done" : ""}"><div class="who">${esc(f.createdBy)} · ${esc(fmtShort((f.createdAt || "").slice(0,10)))} · <span class="chip ${f.status === "open" ? "warn" : f.status === "answered" ? "info" : "mute"}">${esc(f.status === "open" ? t("awaitingReply") : t(f.status))}</span></div><div class="q">${esc(f.message)}</div>${f.reply ? `<div class="a">${esc(f.reply)}</div>` : ""}
+      <div class="row" style="margin-top:8px">${f.status !== "resolved" ? `<button class="btn sm" data-act="resolveFlag" data-id="${esc(f.id)}">${esc(t("resolve"))}</button>` : `<button class="btn sm ghost" data-act="reopenFlag" data-id="${esc(f.id)}">${esc(t("reopen"))}</button>`}</div></div></div>`; }).join("") : `<div class="empty">—</div>`;
+}
+
+// ---------- Project Director: settings
+async function renderSettings(){
+  const L2 = S.lists || {workTypes:[], areas:[]}, ed = S.editStaff;
+  let staff = S.team ? S.team.staff : S.staff;
+  $("#main").innerHTML = `<h1 class="pt">${esc(t("settings"))}</h1>
+    <div class="card"><div class="row" style="justify-content:space-between"><h3>${esc(t("staffList"))}</h3><button class="btn sm" data-act="newStaff">+ ${esc(t("addStaff"))}</button></div>
+      ${ed ? staffForm(ed) : ""}<div id="staffRows">${staff.map(s => `<div class="srow"><span><b>${esc(s.name)}</b> ${s.role === "admin" ? `<span class="chip info">${esc(t("roleAdmin").split(" (")[0])}</span>` : ""}${s.active === false ? ` <span class="chip mute">off</span>` : ""}<div class="small muted">${esc([s.position, s.station, s.lineManager && (t("lineManager") + ": " + s.lineManager)].filter(Boolean).join(" · "))} · ${esc(s.hasPin ? t("hasPin") : t("noPin"))}</div></span><span class="row" style="gap:6px"><button class="btn sm" data-act="editStaff" data-id="${esc(s.id)}">${esc(t("editEntry").split(" ")[0])}</button>${s.hasPin ? `<button class="btn sm ghost" data-act="resetPin" data-id="${esc(s.id)}">${esc(t("resetPin"))}</button>` : ""}</span></div>`).join("")}</div></div>
+    <div class="card listedit"><h3>${esc(t("workTypes"))}</h3><div id="wtRows">${L2.workTypes.map((w,i) => `<div class="wtrow"><input data-wt="${i}" value="${esc(w.name)}"><label><input type="checkbox" data-wtw="${i}"${w.working ? " checked" : ""}> ${esc(t("countsWork"))}</label><button class="x" data-act="delWT" data-i="${i}" aria-label="Remove">×</button></div>`).join("")}</div><button class="btn sm" data-act="addWT">+ ${esc(t("addType"))}</button>
+      <h3 style="margin-top:18px">${esc(t("areasActs"))}</h3><div id="areaRows">${L2.areas.map((a,i) => `<div class="card" style="box-shadow:none;margin-bottom:8px"><div class="wtrow" style="grid-template-columns:minmax(0,1fr) 32px"><input data-an="${i}" value="${esc(a.name)}"><button class="x" data-act="delArea" data-i="${i}" aria-label="Remove">×</button></div><textarea data-aa="${i}">${esc(a.activities.join("\n"))}</textarea></div>`).join("")}</div>
+      <div class="row"><button class="btn sm" data-act="addArea">+ ${esc(t("addArea"))}</button><span class="grow"></span><button class="btn primary" data-act="saveLists">${esc(t("saveLists"))}</button></div></div>
+    ${pinCard()}<div class="card"><button class="btn danger" data-act="signOut">${esc(t("signOut"))}</button></div>`;
+  wirePin();
+  if (!S.team){ try { await loadTeam(S.pStart || periodStart(S.today)); if (S.tab === "settings") renderSettings(); } catch(e){} }
+}
+function staffForm(s){
+  return `<form class="card" id="staffForm" style="box-shadow:none;display:flex;flex-direction:column;gap:10px;background:var(--wash)"><div class="g2"><label class="f">${esc(t("name"))}<input id="sName" value="${esc(s.name || "")}" required></label><label class="f">${esc(t("position"))}<input id="sPos" value="${esc(s.position || "")}"></label><label class="f">${esc(t("station"))}<input id="sSt" value="${esc(s.station || "")}"></label><label class="f">${esc(t("lineManager"))}<input id="sLM" value="${esc(s.lineManager || "")}"></label>
+    <label class="f">${esc(t("role"))}<select id="sRole"><option value="staff"${s.role !== "admin" ? " selected" : ""}>${esc(t("roleStaff"))}</option><option value="admin"${s.role === "admin" ? " selected" : ""}>${esc(t("roleAdmin"))}</option></select></label><label class="f">${esc(t("active"))}<select id="sAct"><option value="1"${s.active !== false ? " selected" : ""}>✓</option><option value="0"${s.active === false ? " selected" : ""}>—</option></select></label></div>
+    <div class="row"><button class="btn primary" type="submit">${esc(t("save"))}</button><button class="btn" type="button" data-act="cancelStaff">${esc(t("cancel"))}</button></div></form>`;
+}
+function collectLists(){
+  const wts = $$("[data-wt]").map(i => ({name: i.value.trim(), working: $(`[data-wtw="${i.dataset.wt}"]`).checked})).filter(w => w.name);
+  const areas = $$("[data-an]").map(i => ({name: i.value.trim(), activities: $(`[data-aa="${i.dataset.an}"]`).value.split("\n").map(x => x.trim()).filter(Boolean)})).filter(a => a.name);
+  return {workTypes: wts, areas, periodStartDay: psd()};
+}
+
+// ---------- Excel export in the timesheet template layout
+async function download(name, blob){
+  if (window.claude && window.claude.use){ try { const dl = await window.claude.use("downloads"); if (dl){ await dl.save({filename: name, data: blob}); return; } } catch(e){ if (e && e.code === "declined") return; } }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 800);
+}
+function personSheet(p, start, list){
+  const end = periodEnd(start), st = periodStats(start, list), rows = [], merges = [];
+  const label = fmtLongEn(start) + " to " + fmtLongEn(end);
+  rows.push(["STAFF TIME REPORT"], ["Blue Forest  |  MozBlue Project, Mozambique"], ["Monthly timesheet"], []);
+  rows.push(["Full name", p.name, "", "", "Period", label], ["Position", p.position || "", "", "", "Project", "MozBlue"], ["Duty station", p.station || "", "", "", "Direct line manager", p.lineManager || ""], []);
+  rows.push(["Date", "Day", "Work type", "Activity area", "Activity", "Location", "Summary of tasks performed / results achieved"]);
+  const WD = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  st.all.forEach(s => { const es = list.filter(e => e.date === s && !e.deleted), d = dt(s), x = xlSerial(s);
+    if (!es.length) rows.push([x, WD[d.getDay()], "", "", "", "", ""]);
+    es.forEach(e => rows.push([x, WD[d.getDay()], e.workType, e.area, e.activity, e.location, e.summary])); });
+  rows.push([], ["Summary of days", "", "", "Days"]);
+  (S.lists ? S.lists.workTypes : []).forEach(w => rows.push([w.name, "", "", st.byType[w.name] || 0]));
+  rows.push(["Total working days", "", "", st.working], ["Weekdays not filled in", "", "", st.missing], []);
+  rows.push(["Staff member", "", "", "Approval 1: Direct line manager", "", "Approval 2: Project Director"], ["Name: " + p.name, "", "", "Name: " + (p.lineManager || ""), "", "Name: "], ["Signature:", "", "", "Signature:", "", "Signature:"], ["Date:", "", "", "Date:", "", "Date:"]);
+  const ws = XLSX.utils.aoa_to_sheet(rows); fmtDates(ws, 0);
+  ws["!cols"] = [{wch:13},{wch:11},{wch:16},{wch:30},{wch:28},{wch:20},{wch:70}];
+  return ws;
+}
+const xlSerial = s => { const [y,m,d] = s.split("-").map(Number); return (Date.UTC(y, m - 1, d) - Date.UTC(1899, 11, 30)) / 864e5; };
+function fmtDates(ws, col){ const r = XLSX.utils.decode_range(ws["!ref"]); for (let i = r.s.r; i <= r.e.r; i++){ const c = ws[XLSX.utils.encode_cell({r:i, c:col})]; if (c && c.t === "n" && c.v > 40000 && c.v < 80000) c.z = "dd mmm yyyy"; } }
+function fmtLongEn(s){ const d = dt(s); return d.getDate() + " " + L.en.months[d.getMonth()] + " " + d.getFullYear(); }
+const safeSheet = n => n.replace(/[\\\/\?\*\[\]:]/g, " ").slice(0, 31);
+async function exportPeople(people, start, entries, fname){
+  if (!window.XLSX){ toast("…"); return; }
+  const wb = XLSX.utils.book_new(), used = new Set();
+  if (people.length > 1){
+    const ov = [["Name","Position","Weekdays expected","Weekdays filled","Weekdays missing","Total working days","Open flags"]];
+    people.forEach(p => { const st = periodStats(start, entries.filter(e => e.staffId === p.id)); ov.push([p.name, p.position || "", st.expected, st.filled, st.missing, st.working, (S.team ? S.team.flags : []).filter(f => f.staffId === p.id && f.status !== "resolved").length]); });
+    const w = XLSX.utils.aoa_to_sheet(ov); w["!cols"] = [{wch:24},{wch:34},{wch:10},{wch:10},{wch:10},{wch:10},{wch:10}]; XLSX.utils.book_append_sheet(wb, w, "Overview");
+  }
+  people.forEach(p => { let n = safeSheet(p.name), k = 2; while (used.has(n)) n = safeSheet(p.name).slice(0, 28) + " " + k++; used.add(n); XLSX.utils.book_append_sheet(wb, personSheet(p, start, entries.filter(e => e.staffId === p.id)), n); });
+  if (people.length > 1){
+    const all = [["Name","Date","Day","Work type","Activity area","Activity","Location","Summary"]];
+    entries.slice().sort((a,b) => a.staffId.localeCompare(b.staffId) || a.date.localeCompare(b.date)).forEach(e => { const p = people.find(x => x.id === e.staffId); if (p) all.push([p.name, xlSerial(e.date), ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][dt(e.date).getDay()], e.workType, e.area, e.activity, e.location, e.summary]); });
+    const w = XLSX.utils.aoa_to_sheet(all); fmtDates(w, 1); w["!cols"] = [{wch:22},{wch:12},{wch:6},{wch:16},{wch:30},{wch:26},{wch:18},{wch:70}]; XLSX.utils.book_append_sheet(wb, w, "All entries");
+  }
+  await download(fname, new Blob([XLSX.write(wb, {type:"array", bookType:"xlsx"})], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+}
+const fileStamp = start => "Timesheet_BlueForest_MozBlue_" + L.en.months[dt(start).getMonth()] + dt(start).getFullYear();
+
+// ---------- actions
+const ACT = {
+  tab: el => { S.tab = el.dataset.v; S.edit = null; S.composing = null; render(); window.scrollTo(0,0); },
+  shiftDay: el => { S.date = addDays(S.date || S.today, +el.dataset.n); S.edit = null; render(); },
+  goToday: () => { S.date = S.today; S.edit = null; render(); },
+  newEntry: () => { S.edit = {id: nid(), date: S.date, workType: "", area: "", activity: "", location: "", summary: ""}; render(); },
+  editEntry: el => { const e = S.entries.find(x => x.id === el.dataset.id); if (e){ S.edit = {...e}; render(); } },
+  cancelEdit: () => { S.edit = null; render(); },
+  delEntry: el => { const e = S.entries.find(x => x.id === el.dataset.id); if (!e) return; saveLocal({...e, deleted: true}); S.entries = S.entries.filter(x => x.id !== e.id || x.deleted); S.edit = null; render(); },
+  copyPrev: () => { const prev = S.entries.filter(e => e.date < S.date && !e.deleted).map(e => e.date).sort().pop(); if (!prev){ toast(t("noEntries")); return; }
+    const src = S.entries.filter(e => e.date === prev && !e.deleted)[0]; S.edit = {id: nid(), date: S.date, workType: src.workType, area: src.area, activity: src.activity, location: src.location, summary: ""}; render(); },
+  sendReply: async el => { const id = el.dataset.id, ta = document.querySelector(`[data-reply="${CSS.escape(id)}"]`), txt = ta && ta.value.trim(); if (!txt) return;
+    try { const r = await authed("replyFlag", {flagId: id, reply: txt}); if (r.ok){ const i = S.flags.findIndex(f => f.id === id); S.flags[i] = r.flag; persist(); toast(t("answered")); render(); } } catch(e){ toast(t("needOnline")); } },
+  shiftPeriod: el => { S.pStart = shiftPeriod(S.pStart || periodStart(S.today), +el.dataset.n); S.composing = null; render(); },
+  openDay: el => { S.date = el.dataset.d; S.tab = "day"; S.edit = null; render(); window.scrollTo(0,0); },
+  dlMine: () => { const me = S.me || {id: S.session.staffId, name: S.session.name}; exportPeople([me], S.pStart, S.entries.filter(e => !e.deleted), fileStamp(S.pStart) + "_" + me.name.replace(/\s+/g, "") + ".xlsx"); },
+  signOut: () => signOut(),
+  openPerson: el => { S.person = el.dataset.id; S.tab = "person"; S.composing = null; if (el.dataset.d) S.pStart = periodStart(el.dataset.d); render(); window.scrollTo(0,0); },
+  jumpRow: el => { const rows = $$("#personRows .erow"); const target = rows.find(r => r.querySelector(".dt b") && r.querySelector(".dt b").textContent.startsWith(dt(el.dataset.d).getDate() + " ")); if (target) target.scrollIntoView({block:"center", behavior:"smooth"}); },
+  composeFlag: el => { S.composing = el.dataset.key; if (S.tab === "person") renderPerson(); else renderEntries(); },
+  cancelFlag: () => { S.composing = null; if (S.tab === "person") renderPerson(); else renderEntries(); },
+  quickQ: el => { const ta = $("#flagText"); if (ta){ ta.value = el.dataset.q; ta.focus(); } },
+  sendFlag: async el => { const msg = ($("#flagText") || {}).value || ""; if (!msg.trim()) return;
+    const req = el.dataset.entry ? {entryId: el.dataset.entry, message: msg} : {targetId: el.dataset.staff, date: el.dataset.date, message: msg};
+    try { const r = await authed("flagEntry", req); if (r.ok){ S.team.flags.push(r.flag); S.composing = null; toast(t("flagSent")); render(); } else toast(r.error); } catch(e){ toast(t("needOnline")); } },
+  resolveFlag: el => flagStatus(el.dataset.id, false), reopenFlag: el => flagStatus(el.dataset.id, true),
+  flagFilter: el => { S.flagFilter = el.dataset.v; renderFlags(); },
+  exportAll: () => { const ppl = teamPeople(); exportPeople(ppl, S.pStart, S.team.entries, fileStamp(S.pStart) + "_AllStaff.xlsx"); },
+  exportPerson: el => { const p = S.team.staff.find(s => s.id === el.dataset.id); exportPeople([p], S.pStart, S.team.entries, fileStamp(S.pStart) + "_" + p.name.replace(/\s+/g, "") + ".xlsx"); },
+  exportFiltered: () => { const list = filteredEntries(), ids = [...new Set(list.map(e => e.staffId))], ppl = S.team.staff.filter(s => ids.includes(s.id)); exportPeople(ppl, S.pStart, list, fileStamp(S.pStart) + "_Filtered.xlsx"); },
+  newStaff: () => { S.editStaff = {role: "staff", active: true}; renderSettings(); },
+  editStaff: el => { S.editStaff = {...(S.team ? S.team.staff : S.staff).find(s => s.id === el.dataset.id)}; renderSettings(); window.scrollTo(0,0); },
+  cancelStaff: () => { S.editStaff = null; renderSettings(); },
+  resetPin: async el => { try { const r = await authed("resetPin", {targetId: el.dataset.id}); if (r.ok){ toast(t("pinResetDone")); S.team = null; renderSettings(); } } catch(e){ toast(t("needOnline")); } },
+  addWT: () => { S.lists = collectLists(); S.lists.workTypes.push({name: "", working: true}); renderSettings(); },
+  delWT: el => { const l = collectLists(); l.workTypes.splice(+el.dataset.i, 1); S.lists = l; renderSettings(); },
+  addArea: () => { S.lists = collectLists(); S.lists.areas.push({name: "", activities: []}); renderSettings(); },
+  delArea: el => { const l = collectLists(); l.areas.splice(+el.dataset.i, 1); S.lists = l; renderSettings(); },
+  saveLists: async () => { const l = collectLists(); try { const r = await authed("saveLists", {lists: l}); if (r.ok){ S.lists = r.lists; persist(); toast(t("listsSaved")); renderSettings(); } else toast(r.error); } catch(e){ toast(t("needOnline")); } }
+};
+async function flagStatus(id, reopen){ try { const r = await authed("resolveFlag", {flagId: id, reopen}); if (r.ok){ const i = S.team.flags.findIndex(f => f.id === id); S.team.flags[i] = r.flag; render(); } } catch(e){ toast(t("needOnline")); } }
+document.addEventListener("click", ev => { const el = ev.target.closest("[data-act]"); if (!el || !ACT[el.dataset.act]) return; if (el.tagName === "A") ev.preventDefault(); ACT[el.dataset.act](el); });
+document.addEventListener("submit", async ev => {
+  if (ev.target.id !== "staffForm") return; ev.preventDefault();
+  const s = {...S.editStaff, name: $("#sName").value.trim(), position: $("#sPos").value.trim(), station: $("#sSt").value.trim(), lineManager: $("#sLM").value.trim(), role: $("#sRole").value, active: $("#sAct").value === "1"};
+  try { const r = await authed("saveStaff", {staff: s}); if (r.ok){ toast(t("staffSaved")); S.editStaff = null; S.team = null; await loadTeam(S.pStart || periodStart(S.today), true); renderSettings(); } else toast(r.error); } catch(e){ toast(t("needOnline")); }
+});
+$("#langBtn").onclick = () => { lang = lang === "en" ? "pt" : "en"; store.set("ts-lang", lang); $("#langBtn").textContent = lang === "pt" ? "PT | EN" : "EN | PT"; document.documentElement.lang = lang; $("#brandSub").textContent = t("appSub"); $("#demoText").textContent = t("demo"); render(); };
+$("#whoBtn").onclick = () => signOut();
+
+boot();
+if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
+})();
+</script>
+</body>
+</html>
