@@ -110,6 +110,28 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand-2)
 .flagbox textarea{min-height:64px;margin-top:8px;background:var(--card)}
 .pend{font-size:11.5px;color:var(--warn);font-weight:600}
 /* calendar */
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:999px;padding:3px;margin:0 0 12px;background:var(--card)}
+.seg button{border:0;background:none;padding:7px 16px;border-radius:999px;font:inherit;font-size:14px;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink)}
+.tgrid{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px}
+.tgrid table{border-collapse:separate;border-spacing:3px;font-size:12px}
+.tgrid th{font-weight:500;color:var(--muted);text-align:center;min-width:26px;line-height:1.15;font-family:var(--font-ui)}
+.tgrid th span{display:block;font-size:10px;color:var(--faint);text-transform:uppercase}
+.tgrid th.we{opacity:.45}.tgrid th.td{color:var(--ink);font-weight:700}
+.tgrid th.nm{position:sticky;left:0;z-index:1;background:var(--card);text-align:left;white-space:nowrap;padding-right:8px;color:var(--ink);font-weight:600;font-size:13px;cursor:pointer;max-width:130px;overflow:hidden;text-overflow:ellipsis}
+.tgrid td{padding:0}
+.tgrid .c{display:block;width:26px;height:26px;border-radius:7px;border:1px solid var(--line);background:transparent;padding:0;cursor:pointer}
+.tgrid .c.filled{background:var(--cal-ok);border-color:var(--cal-ok)}
+.tgrid .c.missing{background:var(--cal-miss);border-color:var(--cal-miss)}
+.tgrid .c.flag{background:var(--cal-flag);border-color:var(--cal-flag)}
+.tgrid .c.offd{background:var(--cal-off);border-color:var(--cal-off)}
+.tgrid .c.weekend{opacity:.4}
+.tgrid .c.future{border-style:dashed}.tgrid .c.future.we{opacity:.4}
+.tgrid .c.td{box-shadow:0 0 0 2px var(--card),0 0 0 3.5px var(--ink)}
+.part{display:flex;flex-direction:column;gap:12px}
+.part+.part{border-top:1px dashed var(--line-2);padding-top:14px}
+.parthead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.parthead b{font-family:var(--font-display);font-size:14px;color:var(--brand)}
 .cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
 .cal .wd{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);text-align:center;padding-bottom:2px}
 .cal .d{aspect-ratio:1/1;border-radius:12px;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;font-family:var(--font-display);font-size:16px;padding:0}
@@ -243,7 +265,7 @@ const L = {
   e_invalid_pin:"PIN must be 4 to 8 digits.", e_username_taken:"That username is already taken.", e_name_required:"Name is required.", signIn:"Sign in", yourName:"Your name", choose:"Choose your name", pin:"PIN", createPin:"Create your PIN (4 to 8 letters or numbers)", confirmPin:"Repeat PIN", firstTime:"First time here: choose a PIN you will remember. You will use it every time you sign in.",
   wrongPin:"Wrong PIN. Try again.", locked:"Too many attempts. Wait 15 minutes, or ask Faruk to reset your PIN.", pinMismatch:"The two PINs do not match.", pinRule:"PIN must be 4 to 8 letters or numbers.", signOut:"Sign out", offline:"Offline", saved:"Saved", waiting:"waiting to sync",
   today:"Today", day:"Day", period:"Period", feed:"Messages", account:"Profile", flagged:"Flagged", overtime:"Weekend work", team:"Team", entries:"Entries", flags:"Flags", myDay:"My day", settings:"Settings",
-  addEntry:"Add entry", editEntry:"Edit entry", copyPrev:"Copy previous day", workType:"Work type", area:"Activity area", activity:"Activity", location:"Location", summary:"Summary of tasks performed / results achieved", save:"Save", cancel:"Cancel", del:"Delete", optional:"optional",
+  addEntry:"Add entry", addPart:"Add another part", addPartHint:"Worked in more than one activity area, or in the field and the office on the same day? Add a part for each.", partN:"Part {n}", viewList:"List", viewCal:"Calendar", gridHint:"Tap a day to open that person on that date. Scroll sideways to see the whole period.", removePart:"Remove", partsDay:"{n} parts recorded for this day.", editEntry:"Edit entry", copyPrev:"Copy previous day", workType:"Work type", area:"Activity area", activity:"Activity", location:"Location", summary:"Summary of tasks performed / results achieved", save:"Save", cancel:"Cancel", del:"Delete", optional:"optional",
   pickArea:"Choose an area", pickActivity:"Choose (optional)", otherAct:"Other (describe in summary)", needWT:"Choose a work type.", needArea:"Choose an activity area.", needSum:"Write a short summary of what you did.",
   noEntries:"Nothing recorded for this day yet.", weekend:"Weekend", filled:"Filled", missing:"Missing", notYet:"Not yet", offDay:"Day off / leave", future:"Future", pending:"Not synced yet",
   summaryDays:"Summary of days", totalWork:"Total working days", notFilled:"Weekdays not filled in", dlMine:"Download my timesheet (Excel)", periodWord:"Period",
@@ -264,7 +286,7 @@ const L = {
   e_invalid_pin:"O PIN deve ter 4 a 8 dígitos.", e_username_taken:"Esse nome de utilizador já existe.", e_name_required:"O nome é obrigatório.", signIn:"Entrar", yourName:"O seu nome", choose:"Escolha o seu nome", pin:"PIN", createPin:"Crie o seu PIN (4 a 8 letras ou números)", confirmPin:"Repita o PIN", firstTime:"Primeira vez: escolha um PIN que vai lembrar. Vai usá-lo sempre que entrar.",
   wrongPin:"PIN errado. Tente outra vez.", locked:"Demasiadas tentativas. Aguarde 15 minutos ou peça ao Faruk para repor o seu PIN.", pinMismatch:"Os dois PINs não coincidem.", pinRule:"O PIN deve ter 4 a 8 letras ou números.", signOut:"Sair", offline:"Sem rede", saved:"Guardado", waiting:"por sincronizar",
   today:"Hoje", day:"Dia", period:"Período", feed:"Mensagens", account:"Perfil", flagged:"Assinalado", overtime:"Trabalho ao fim de semana", team:"Equipa", entries:"Registos", flags:"Pedidos", myDay:"O meu dia", settings:"Definições",
-  addEntry:"Adicionar registo", editEntry:"Editar registo", copyPrev:"Copiar dia anterior", workType:"Tipo de trabalho", area:"Área de actividade", activity:"Actividade", location:"Local", summary:"Resumo das tarefas realizadas / resultados alcançados", save:"Guardar", cancel:"Cancelar", del:"Apagar", optional:"opcional",
+  addEntry:"Adicionar registo", addPart:"Adicionar outra parte", addPartHint:"Trabalhou em mais de uma área de actividade, ou no campo e no escritório no mesmo dia? Adicione uma parte para cada.", partN:"Parte {n}", viewList:"Lista", viewCal:"Calendário", gridHint:"Toque num dia para abrir essa pessoa nessa data. Deslize para o lado para ver o período completo.", removePart:"Remover", partsDay:"{n} partes registadas para este dia.", editEntry:"Editar registo", copyPrev:"Copiar dia anterior", workType:"Tipo de trabalho", area:"Área de actividade", activity:"Actividade", location:"Local", summary:"Resumo das tarefas realizadas / resultados alcançados", save:"Guardar", cancel:"Cancelar", del:"Apagar", optional:"opcional",
   pickArea:"Escolha uma área", pickActivity:"Escolha (opcional)", otherAct:"Outra (descreva no resumo)", needWT:"Escolha o tipo de trabalho.", needArea:"Escolha a área de actividade.", needSum:"Escreva um breve resumo do que fez.",
   noEntries:"Ainda nada registado para este dia.", weekend:"Fim de semana", filled:"Preenchido", missing:"Em falta", notYet:"Ainda não", offDay:"Folga / férias", future:"Futuro", pending:"Ainda não sincronizado",
   summaryDays:"Resumo dos dias", totalWork:"Total de dias de trabalho", notFilled:"Dias úteis por preencher", dlMine:"Descarregar a minha folha (Excel)", periodWord:"Período",
@@ -303,7 +325,7 @@ async function authed(action, extra){
 
 // ---------- state
 const S = {
-  session: store.get("ts-session", null), staff: [], lists: null, today: iso(new Date()),
+  session: store.get("ts-session", null), staff: [], lists: null, teamView: store.get("ts-teamview", "list"), today: iso(new Date()),
   me: null, entries: [], flags: [], outbox: [], tab: null, date: iso(new Date()), pStart: null, edit: null,
   team: null, teamKey: "", person: null, filter: {who:"", wt:"", area:"", q:""}, flagFilter: "open", composing: null, editStaff: null, online: navigator.onLine
 };
@@ -522,37 +544,50 @@ function renderDay(){
   $("#main").innerHTML = `<div class="dayhead"><button class="nav" data-act="shiftDay" data-n="-1" aria-label="Previous day">‹</button><div class="mid"><b>${esc(fmtDay(d))}</b><span>${dt(d).getFullYear()} · <span class="chip ${stChip[0]}">${esc(stChip[1])}</span></span></div><button class="nav" data-act="shiftDay" data-n="1" aria-label="Next day">›</button></div>
     <div class="daytools"><button class="btn sm" data-act="goToday">${esc(t("today"))}</button><input type="date" id="pickDate" value="${d}" aria-label="Date">${isAdmin() ? `<button class="btn sm" data-act="tab" data-v="period">${esc(t("period"))}</button>` : ""}</div>
     ${loose.map(f => `<div class="card">${flagBox(f)}</div>`).join("")}
-    ${mine.map(e => editing && editing.id === e.id ? entryForm(editing) : entryCard(e, dayFlags.filter(f => f.entryId === e.id))).join("") || (editing ? "" : `<div class="empty" style="text-align:center">${esc(t("noEntries"))}</div>`)}
-    ${editing && !mine.some(e => e.id === editing.id) ? entryForm(editing) : ""}
+    ${mine.length > 1 && !editing ? `<p class="small muted" style="margin:0 0 8px">${esc(t("partsDay").replace("{n}", mine.length))}</p>` : ""}
+    ${mine.map(e => editing && !editing.isNew && editing.parts[0].id === e.id ? entryForm(editing) : entryCard(e, dayFlags.filter(f => f.entryId === e.id))).join("") || (editing ? "" : `<div class="empty" style="text-align:center">${esc(t("noEntries"))}</div>`)}
+    ${editing && editing.isNew ? entryForm(editing) : ""}
     ${editing ? "" : `<div class="row" style="justify-content:center;margin-top:8px"><button class="btn primary" data-act="newEntry">+ ${esc(t("addEntry"))}</button>${mine.length ? "" : `<button class="btn" data-act="copyPrev">${esc(t("copyPrev"))}</button>`}</div>`}`;
   $("#pickDate").onchange = ev => { if (ev.target.value){ S.date = ev.target.value; S.edit = null; render(); } };
   if (editing) wireForm();
 }
-function entryForm(e){
-  const L2 = S.lists || {workTypes:[], areas:[]}, off = e.workType && !isWorking(e.workType), area = L2.areas.find(a => a.name === e.area);
-  const locs = [...new Set(S.entries.map(x => x.location).filter(Boolean))].slice(-30);
+const blankPart = (loc) => ({id: nid(), workType: "", area: "", activity: "", location: loc || "", summary: ""});
+function partHtml(e, i, n, isNew){
+  const L2 = S.lists || {workTypes:[], areas:[]}, off = e.workType && !isWorking(e.workType), area = L2.areas.find(a => a.name === e.area), sx = i ? String(i) : "";
+  return `<div class="part" data-i="${i}">${n > 1 || isNew ? `<div class="parthead"><b>${esc(t("partN").replace("{n}", i + 1))}</b>${i > 0 ? `<button class="btn sm ghost" type="button" data-act="removePart" data-i="${i}">${esc(t("removePart"))}</button>` : ""}</div>` : ""}
+    <label class="f">${esc(t("workType"))}<select id="fWT${sx}" data-k="workType" data-i="${i}" required><option value=""></option>${L2.workTypes.map(w => `<option${w.name === e.workType ? " selected" : ""}>${esc(w.name)}</option>`).join("")}</select></label>
+    <div class="g2"${off ? " hidden" : ""} id="areaRow${sx}"><label class="f">${esc(t("area"))}<select id="fArea${sx}" data-k="area" data-i="${i}"><option value="">${esc(t("pickArea"))}</option>${L2.areas.map(a => `<option${a.name === e.area ? " selected" : ""}>${esc(a.name)}</option>`).join("")}</select></label>
+      <label class="f">${esc(t("activity"))}<select id="fAct${sx}" data-k="activity" data-i="${i}"><option value="">${esc(t("pickActivity"))}</option>${(area ? area.activities : []).map(x => `<option${x === e.activity ? " selected" : ""}>${esc(x)}</option>`).join("")}${e.activity && area && !area.activities.includes(e.activity) ? `<option selected>${esc(e.activity)}</option>` : ""}</select></label></div>
+    <label class="f">${esc(t("location"))}<input id="fLoc${sx}" data-k="location" data-i="${i}" list="locList" value="${esc(e.location || "")}" autocomplete="off"></label>
+    <label class="f">${esc(t("summary"))}${off ? ` (${esc(t("optional"))})` : ""}<textarea id="fSum${sx}" data-k="summary" data-i="${i}">${esc(e.summary || "")}</textarea></label></div>`;
+}
+function entryForm(ed){
+  const locs = [...new Set(S.entries.map(x => x.location).filter(Boolean))].slice(-30), n = ed.parts.length;
   return `<form class="card" id="entryForm" style="display:flex;flex-direction:column;gap:12px">
-    <h3>${esc(S.entries.some(x => x.id === e.id) ? t("editEntry") : t("addEntry"))}</h3>
-    <label class="f">${esc(t("workType"))}<select id="fWT" required><option value=""></option>${L2.workTypes.map(w => `<option${w.name === e.workType ? " selected" : ""}>${esc(w.name)}</option>`).join("")}</select></label>
-    <div class="g2"${off ? " hidden" : ""} id="areaRow"><label class="f">${esc(t("area"))}<select id="fArea"><option value="">${esc(t("pickArea"))}</option>${L2.areas.map(a => `<option${a.name === e.area ? " selected" : ""}>${esc(a.name)}</option>`).join("")}</select></label>
-      <label class="f">${esc(t("activity"))}<select id="fAct"><option value="">${esc(t("pickActivity"))}</option>${(area ? area.activities : []).map(x => `<option${x === e.activity ? " selected" : ""}>${esc(x)}</option>`).join("")}${e.activity && area && !area.activities.includes(e.activity) ? `<option selected>${esc(e.activity)}</option>` : ""}</select></label></div>
-    <label class="f">${esc(t("location"))}<input id="fLoc" list="locList" value="${esc(e.location || "")}" autocomplete="off"><datalist id="locList">${locs.map(l => `<option value="${esc(l)}">`).join("")}</datalist></label>
-    <label class="f">${esc(t("summary"))}${off ? ` (${esc(t("optional"))})` : ""}<textarea id="fSum">${esc(e.summary || "")}</textarea></label>
+    <h3>${esc(ed.isNew ? t("addEntry") : t("editEntry"))}</h3>
+    ${ed.parts.map((e, i) => partHtml(e, i, n, ed.isNew)).join("")}<datalist id="locList">${locs.map(l => `<option value="${esc(l)}">`).join("")}</datalist>
+    ${ed.isNew ? `<div><button class="btn sm" type="button" data-act="addPart">+ ${esc(t("addPart"))}</button><div class="small muted" style="margin-top:6px">${esc(t("addPartHint"))}</div></div>` : ""}
     <p class="small" id="fMsg" style="margin:0;color:var(--bad)"></p>
-    <div class="row"><button class="btn primary" type="submit">${esc(t("save"))}</button><button class="btn" type="button" data-act="cancelEdit">${esc(t("cancel"))}</button><span class="grow"></span>${S.entries.some(x => x.id === e.id) ? `<button class="btn danger" type="button" data-act="delEntry" data-id="${esc(e.id)}">${esc(t("del"))}</button>` : ""}</div></form>`;
+    <div class="row"><button class="btn primary" type="submit">${esc(t("save"))}</button><button class="btn" type="button" data-act="cancelEdit">${esc(t("cancel"))}</button><span class="grow"></span>${ed.isNew ? "" : `<button class="btn danger" type="button" data-act="delEntry" data-id="${esc(ed.parts[0].id)}">${esc(t("del"))}</button>`}</div></form>`;
+}
+function keepForm(){
+  if (!S.edit || !$("#entryForm")) return;
+  $$("#entryForm [data-k]").forEach(el => { const pt = S.edit.parts[+el.dataset.i]; if (pt) pt[el.dataset.k] = el.value; });
 }
 function wireForm(){
-  const keep = () => { S.edit = {...S.edit, workType: $("#fWT").value, area: $("#fArea").value, activity: $("#fAct").value, location: $("#fLoc").value, summary: $("#fSum").value}; };
-  $("#fWT").onchange = () => { keep(); renderDay(); $("#fWT").focus(); };
-  $("#fArea").onchange = () => { keep(); S.edit.activity = ""; renderDay(); $("#fArea").focus(); };
+  $$("#entryForm select[data-k=workType]").forEach(el => el.onchange = () => { keepForm(); const id = el.id; renderDay(); const x = document.getElementById(id); if (x) x.focus(); });
+  $$("#entryForm select[data-k=area]").forEach(el => el.onchange = () => { keepForm(); S.edit.parts[+el.dataset.i].activity = ""; const id = el.id; renderDay(); const x = document.getElementById(id); if (x) x.focus(); });
   $("#entryForm").onsubmit = ev => {
-    ev.preventDefault(); keep(); const e = S.edit, msg = $("#fMsg");
-    if (!e.workType){ msg.textContent = t("needWT"); return; }
-    const off = !isWorking(e.workType);
-    if (!off && !e.area){ msg.textContent = t("needArea"); return; }
-    if (!off && !e.summary.trim()){ msg.textContent = t("needSum"); return; }
-    if (off){ e.area = ""; e.activity = ""; }
-    saveLocal({id: e.id, date: e.date, workType: e.workType, area: e.area, activity: e.activity, location: e.location.trim(), summary: e.summary.trim(), deleted: false});
+    ev.preventDefault(); keepForm(); const ed = S.edit, msg = $("#fMsg"), many = ed.parts.length > 1;
+    for (let i = 0; i < ed.parts.length; i++){
+      const e = ed.parts[i], pre = many ? t("partN").replace("{n}", i + 1) + ": " : "";
+      if (!e.workType){ msg.textContent = pre + t("needWT"); return; }
+      const off = !isWorking(e.workType);
+      if (!off && !e.area){ msg.textContent = pre + t("needArea"); return; }
+      if (!off && !e.summary.trim()){ msg.textContent = pre + t("needSum"); return; }
+    }
+    ed.parts.forEach(e => { const off = !isWorking(e.workType);
+      saveLocal({id: e.id, date: ed.date, workType: e.workType, area: off ? "" : e.area, activity: off ? "" : e.activity, location: e.location.trim(), summary: e.summary.trim(), deleted: false}); });
     S.edit = null; toast(t("saved")); render();
   };
   setTimeout(() => { const f = $("#entryForm"); if (f) f.scrollIntoView({block:"nearest", behavior:"smooth"}); }, 30);
@@ -620,9 +655,10 @@ async function renderTeam(force){
   const avg = stats.length ? Math.round(stats.reduce((a, x) => a + (x.st.expected ? x.st.filled / x.st.expected : 1), 0) / stats.length * 100) : 0;
   const miss = stats.reduce((a, x) => a + x.st.missing, 0), open = S.team.flags.filter(f => f.status !== "resolved").length;
   $("#teamBody").innerHTML = `<div class="kpis"><div class="kpi"><b>${ppl.length}</b><span>${esc(t("staff"))}</span></div><div class="kpi"><b>${avg}%</b><span>${esc(t("avgDone"))}</span></div><div class="kpi${miss ? " alert" : ""}"><b>${miss}</b><span>${esc(t("missingDays"))}</span></div><div class="kpi"><b>${open}</b><span>${esc(t("openFlags"))}</span></div></div>
-    <div class="card">${stats.sort((a,b) => b.st.missing - a.st.missing || a.p.name.localeCompare(b.p.name)).map(({p, st}) => { const fo = S.team.flags.filter(f => f.staffId === p.id && f.status !== "resolved"), ans = fo.filter(f => f.status === "answered").length;
+    <div class="seg" role="tablist"><button type="button" data-act="teamView" data-v="list" aria-pressed="${S.teamView !== "cal"}">${esc(t("viewList"))}</button><button type="button" data-act="teamView" data-v="cal" aria-pressed="${S.teamView === "cal"}">${esc(t("viewCal"))}</button></div>
+    ${S.teamView === "cal" ? teamGrid(stats.map(x => x.p).sort((a,b) => a.name.localeCompare(b.name))) : `<div class="card">${stats.sort((a,b) => b.st.missing - a.st.missing || a.p.name.localeCompare(b.p.name)).map(({p, st}) => { const fo = S.team.flags.filter(f => f.staffId === p.id && f.status !== "resolved"), ans = fo.filter(f => f.status === "answered").length;
       return `<div class="person" data-act="openPerson" data-id="${esc(p.id)}"><span class="av">${esc(p.name.split(/\s+/).map(w => w[0]).join("").slice(0,2))}</span><span><b>${esc(p.name)}</b><div class="meta">${esc(p.position || "")}</div><div class="bar"><i style="width:${st.expected ? Math.round(st.filled / st.expected * 100) : 0}%"></i></div></span>
-        <span class="r"><span class="mono">${st.filled}/${st.expected} ${esc(t("days"))}</span>${st.missing ? `<span class="chip bad">${st.missing} ${esc(t("missing").toLowerCase())}</span>` : `<span class="chip ok">${esc(t("filled"))}</span>`}${fo.length ? `<span class="chip ${ans ? "info" : "warn"}">${fo.length} ${esc(t("flags").toLowerCase())}</span>` : ""}<span class="small muted">${esc(t("lastEntry"))}: ${st.last ? esc(fmtShort(st.last)) : esc(t("noEntryYet"))}</span></span></div>`; }).join("")}</div>
+        <span class="r"><span class="mono">${st.filled}/${st.expected} ${esc(t("days"))}</span>${st.missing ? `<span class="chip bad">${st.missing} ${esc(t("missing").toLowerCase())}</span>` : `<span class="chip ok">${esc(t("filled"))}</span>`}${fo.length ? `<span class="chip ${ans ? "info" : "warn"}">${fo.length} ${esc(t("flags").toLowerCase())}</span>` : ""}<span class="small muted">${esc(t("lastEntry"))}: ${st.last ? esc(fmtShort(st.last)) : esc(t("noEntryYet"))}</span></span></div>`; }).join("")}</div>`}
     <div class="row"><button class="btn" data-act="exportAll">${esc(t("exportAll"))}</button></div>`;
 }
 function entryRow(e, p, opts){
@@ -634,6 +670,16 @@ function entryRow(e, p, opts){
       ${composing ? `<div class="compose"><div class="quick">${(e.id ? ["qDetail","qResult","qWhere"] : ["qMissing"]).map(q => `<button type="button" data-act="quickQ" data-q="${esc(t(q))}">${esc(t(q))}</button>`).join("")}</div><textarea id="flagText" placeholder="${esc(t("askAbout"))}"></textarea><div class="row"><button class="btn sm primary" data-act="sendFlag" data-entry="${esc(e.id)}" data-staff="${esc(p.id)}" data-date="${esc(e.date)}">${esc(t("sendFlag"))} ${esc(p.name.split(" ")[0])}</button><button class="btn sm" data-act="cancelFlag">${esc(t("cancel"))}</button></div></div>` : ""}</div>
     <div class="act">${composing ? "" : `<button class="btn sm" data-act="composeFlag" data-key="${esc(key)}">${esc(t("flagThis"))}</button>`}</div></div>`;
 }
+function teamGrid(ppl){
+  const days = daysIn(S.pStart, periodEnd(S.pStart)), wd = t("wd");
+  const head = `<tr><th class="nm"></th>${days.map(s => `<th class="${isWeekend(s) ? "we" : ""}${s === S.today ? " td" : ""}"><span>${esc(wd[(dt(s).getDay() + 6) % 7].slice(0,1))}</span>${dt(s).getDate()}</th>`).join("")}</tr>`;
+  const rows = ppl.map(p => { const list = S.team.entries.filter(e => e.staffId === p.id), fl = S.team.flags.filter(f => f.staffId === p.id && f.status !== "resolved");
+    return `<tr><th class="nm" data-act="openPerson" data-id="${esc(p.id)}">${esc(p.name)}</th>${days.map(s => { const st = dayStatus(s, list), cls = fl.some(f => f.entryDate === s) ? "flag" : st;
+      return `<td><button type="button" class="c ${cls}${isWeekend(s) ? " we" : ""}${s === S.today ? " td" : ""}" data-act="openPerson" data-id="${esc(p.id)}" data-d="${s}" title="${esc(p.name + " · " + fmtDay(s) + " · " + t(cls === "flag" ? "flagged" : cls === "offd" ? "offDay" : cls))}" aria-label="${esc(p.name + " " + fmtDay(s) + " " + t(cls === "flag" ? "flagged" : cls === "offd" ? "offDay" : cls))}"></button></td>`; }).join("")}</tr>`; }).join("");
+  return `<div class="card"><div class="tgrid"><table>${head}${rows}</table></div>
+    <div class="legend"><span><i style="background:var(--cal-ok)"></i>${esc(t("filled"))}</span><span><i style="background:var(--cal-miss)"></i>${esc(t("missing"))}</span><span><i style="background:var(--cal-flag)"></i>${esc(t("flagged"))}</span><span><i style="background:var(--cal-off)"></i>${esc(t("offDay"))}</span><span><i style="border:1px solid var(--line-2);opacity:.5"></i>${esc(t("weekend"))}</span></div>
+    <p class="small muted" style="margin:8px 0 0">${esc(t("gridHint"))}</p></div>`;
+}
 async function renderPerson(){
   try { await loadTeam(S.pStart); } catch(e){ $("#main").innerHTML = `<div class="card">${esc(t("needOnline"))}</div>`; return; }
   const p = S.team.staff.find(s => s.id === S.person); if (!p){ S.tab = "team"; render(); return; }
@@ -643,6 +689,7 @@ async function renderPerson(){
     <div class="pnav"><button class="btn sm" data-act="shiftPeriod" data-n="-1">‹</button><b>${esc(periodLabel(S.pStart))}</b><button class="btn sm" data-act="shiftPeriod" data-n="1">›</button></div>
     <div class="g2" style="align-items:start"><div class="card">${calendar(S.pStart, list, flags, "jumpRow")}</div><div class="card"><h3>${esc(t("summaryDays"))}</h3>${summaryTable(st)}<div class="row" style="margin-top:14px"><button class="btn" data-act="exportPerson" data-id="${esc(p.id)}">${esc(t("export"))}</button></div></div></div>
     <div class="card" id="personRows">${rows || `<div class="empty">${esc(t("noEntryYet"))}</div>`}</div>`;
+  if (S.jumpTo){ const d = S.jumpTo; S.jumpTo = null; setTimeout(() => ACT.jumpRow({dataset: {d}}), 60); }
   if (S.composing) setTimeout(() => { const ta = $("#flagText"); if (ta){ ta.focus(); ta.scrollIntoView({block:"center"}); } }, 30);
 }
 async function renderEntries(){
@@ -785,19 +832,22 @@ const ACT = {
   tab: el => { S.tab = el.dataset.v; S.edit = null; S.composing = null; render(); window.scrollTo(0,0); },
   shiftDay: el => { S.date = addDays(S.date || S.today, +el.dataset.n); S.edit = null; render(); },
   goToday: () => { S.date = S.today; S.edit = null; render(); },
-  newEntry: () => { S.edit = {id: nid(), date: S.date, workType: "", area: "", activity: "", location: "", summary: ""}; render(); },
-  editEntry: el => { const e = S.entries.find(x => x.id === el.dataset.id); if (e){ S.edit = {...e}; render(); } },
+  newEntry: () => { S.edit = {isNew: true, date: S.date, parts: [blankPart()]}; render(); },
+  addPart: () => { keepForm(); const last = S.edit.parts[S.edit.parts.length - 1]; S.edit.parts.push(blankPart(last && last.location)); renderDay(); const f = $$("#entryForm .part"); if (f.length) f[f.length - 1].scrollIntoView({block:"center", behavior:"smooth"}); },
+  removePart: el => { keepForm(); S.edit.parts.splice(+el.dataset.i, 1); renderDay(); },
+  editEntry: el => { const e = S.entries.find(x => x.id === el.dataset.id); if (e){ S.edit = {isNew: false, date: e.date, parts: [{...e}]}; render(); } },
   cancelEdit: () => { S.edit = null; render(); },
   delEntry: el => { const e = S.entries.find(x => x.id === el.dataset.id); if (!e) return; saveLocal({...e, deleted: true}); S.entries = S.entries.filter(x => x.id !== e.id || x.deleted); S.edit = null; render(); },
   copyPrev: () => { const prev = S.entries.filter(e => e.date < S.date && !e.deleted).map(e => e.date).sort().pop(); if (!prev){ toast(t("noEntries")); return; }
-    const src = S.entries.filter(e => e.date === prev && !e.deleted)[0]; S.edit = {id: nid(), date: S.date, workType: src.workType, area: src.area, activity: src.activity, location: src.location, summary: ""}; render(); },
+    S.edit = {isNew: true, date: S.date, parts: S.entries.filter(e => e.date === prev && !e.deleted).map(src => ({id: nid(), workType: src.workType, area: src.area, activity: src.activity, location: src.location, summary: ""}))}; render(); },
   sendReply: async el => { const id = el.dataset.id, ta = document.querySelector(`[data-reply="${CSS.escape(id)}"]`), txt = ta && ta.value.trim(); if (!txt) return;
     try { const r = await authed("replyFlag", {flagId: id, reply: txt}); if (r.ok){ const i = S.flags.findIndex(f => f.id === id); S.flags[i] = r.flag; persist(); toast(t("answered")); render(); } } catch(e){ toast(t("needOnline")); } },
   shiftPeriod: el => { S.pStart = shiftPeriod(S.pStart || periodStart(S.today), +el.dataset.n); S.composing = null; render(); },
   openDay: el => { S.date = el.dataset.d; S.tab = "day"; S.edit = null; render(); window.scrollTo(0,0); },
   dlMine: () => { const me = S.me || {id: S.session.staffId, name: S.session.name}; exportPeople([me], S.pStart, S.entries.filter(e => !e.deleted), fileStamp(S.pStart) + "_" + me.name.replace(/\s+/g, "") + ".xlsx"); },
   signOut: () => signOut(),
-  openPerson: el => { S.person = el.dataset.id; S.tab = "person"; S.composing = null; if (el.dataset.d) S.pStart = periodStart(el.dataset.d); render(); window.scrollTo(0,0); },
+  openPerson: el => { S.person = el.dataset.id; S.tab = "person"; S.composing = null; if (el.dataset.d){ S.pStart = periodStart(el.dataset.d); S.jumpTo = el.dataset.d; } render(); window.scrollTo(0,0); },
+  teamView: el => { S.teamView = el.dataset.v; store.set("ts-teamview", S.teamView); renderTeam(); },
   jumpRow: el => { const rows = $$("#personRows .erow"); const target = rows.find(r => r.querySelector(".dt b") && r.querySelector(".dt b").textContent.startsWith(dt(el.dataset.d).getDate() + " ")); if (target) target.scrollIntoView({block:"center", behavior:"smooth"}); },
   composeFlag: el => { S.composing = el.dataset.key; if (S.tab === "person") renderPerson(); else renderEntries(); },
   cancelFlag: () => { S.composing = null; if (S.tab === "person") renderPerson(); else renderEntries(); },
