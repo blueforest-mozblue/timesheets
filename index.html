@@ -52,7 +52,8 @@ header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
 /* tabs */
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:9;background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center}
 nav.tabs .in{display:flex;gap:4px;max-width:640px;width:100%}
-nav.tabs button{flex:1;border:0;background:none;padding:6px 2px;border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11.5px;color:var(--muted);cursor:pointer;position:relative;font-family:var(--font-display)}
+nav.tabs button{flex:1;border:0;background:none;padding:6px 2px;border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11.5px;color:var(--muted);cursor:pointer;position:relative;font-family:var(--font-display);min-width:0}
+nav.tabs button>span:not(.badge){max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 nav.tabs button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 nav.tabs button[aria-current="page"]{color:var(--brand);background:var(--wash)}
 nav.tabs .badge{position:absolute;top:2px;right:calc(50% - 22px);background:var(--bad);color:#fff;border-radius:999px;font-size:10.5px;min-width:18px;height:18px;line-height:18px;padding:0 5px;font-family:var(--font-ui);font-weight:600}
@@ -112,14 +113,19 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand-2)
 .cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
 .cal .wd{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);text-align:center;padding-bottom:2px}
 .cal .d{aspect-ratio:1/1;border-radius:12px;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;font-family:var(--font-display);font-size:16px;padding:0}
+:root{--cal-ok:#2c7a5a;--cal-miss:#c2570c;--cal-flag:#c0262d;--cal-off:#6d5d96}
 .cal .d small{font-size:9.5px;font-family:var(--font-ui);color:var(--muted);line-height:1}
-.cal .d.filled{background:var(--ok-wash);border-color:color-mix(in srgb,var(--ok) 35%,transparent);color:var(--ok)}
-.cal .d.offd{background:var(--off-wash);border-color:color-mix(in srgb,var(--off) 30%,transparent);color:var(--off)}
-.cal .d.missing{background:var(--bad-wash);border-color:color-mix(in srgb,var(--bad) 35%,transparent);color:var(--bad)}
-.cal .d.weekend{background:transparent;color:var(--faint)}
+.cal .d.filled,.cal .d.missing,.cal .d.flag,.cal .d.offd{color:#fff;font-weight:600}
+.cal .d.filled small,.cal .d.missing small,.cal .d.flag small,.cal .d.offd small{color:rgba(255,255,255,.85)}
+.cal .d.filled{background:var(--cal-ok);border-color:var(--cal-ok)}
+.cal .d.missing{background:var(--cal-miss);border-color:var(--cal-miss)}
+.cal .d.flag{background:var(--cal-flag);border-color:var(--cal-flag)}
+.cal .d.offd{background:var(--cal-off);border-color:var(--cal-off)}
+.cal .d.weekend{background:transparent;color:var(--faint);opacity:.4}
 .cal .d.future{color:var(--faint);background:transparent;border-style:dashed}
-.cal .d.today{box-shadow:0 0 0 2px var(--brand)}
-.cal .d .dot{position:absolute;top:5px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--warn)}
+.cal .d.future.we{opacity:.4}
+.cal .d.today{box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--ink)}
+.cal .d .dot{position:absolute;top:5px;right:6px;width:7px;height:7px;border-radius:50%;background:#fff}
 .cal .pad{visibility:hidden}
 .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
@@ -236,7 +242,7 @@ const L = {
   e_invalid_email:"Enter a valid email address.", e_email_in_use:"This email is already used by another account.", e_unknown_user:"Username not found.", e_not_registered:"This account is not set up yet. Use Create your account first.",
   e_invalid_pin:"PIN must be 4 to 8 digits.", e_username_taken:"That username is already taken.", e_name_required:"Name is required.", signIn:"Sign in", yourName:"Your name", choose:"Choose your name", pin:"PIN", createPin:"Create your PIN (4 to 8 letters or numbers)", confirmPin:"Repeat PIN", firstTime:"First time here: choose a PIN you will remember. You will use it every time you sign in.",
   wrongPin:"Wrong PIN. Try again.", locked:"Too many attempts. Wait 15 minutes, or ask Faruk to reset your PIN.", pinMismatch:"The two PINs do not match.", pinRule:"PIN must be 4 to 8 letters or numbers.", signOut:"Sign out", offline:"Offline", saved:"Saved", waiting:"waiting to sync",
-  today:"Today", day:"Day", period:"Period", feed:"Messages", account:"Account", team:"Team", entries:"Entries", flags:"Flags", myDay:"My day", settings:"Settings",
+  today:"Today", day:"Day", period:"Period", feed:"Messages", account:"Profile", flagged:"Flagged", overtime:"Weekend work", team:"Team", entries:"Entries", flags:"Flags", myDay:"My day", settings:"Settings",
   addEntry:"Add entry", editEntry:"Edit entry", copyPrev:"Copy previous day", workType:"Work type", area:"Activity area", activity:"Activity", location:"Location", summary:"Summary of tasks performed / results achieved", save:"Save", cancel:"Cancel", del:"Delete", optional:"optional",
   pickArea:"Choose an area", pickActivity:"Choose (optional)", otherAct:"Other (describe in summary)", needWT:"Choose a work type.", needArea:"Choose an activity area.", needSum:"Write a short summary of what you did.",
   noEntries:"Nothing recorded for this day yet.", weekend:"Weekend", filled:"Filled", missing:"Missing", notYet:"Not yet", offDay:"Day off / leave", future:"Future", pending:"Not synced yet",
@@ -257,7 +263,7 @@ const L = {
   e_invalid_email:"Escreva um email válido.", e_email_in_use:"Este email já é usado por outra conta.", e_unknown_user:"Nome de utilizador não encontrado.", e_not_registered:"Esta conta ainda não está criada. Use primeiro Criar conta.",
   e_invalid_pin:"O PIN deve ter 4 a 8 dígitos.", e_username_taken:"Esse nome de utilizador já existe.", e_name_required:"O nome é obrigatório.", signIn:"Entrar", yourName:"O seu nome", choose:"Escolha o seu nome", pin:"PIN", createPin:"Crie o seu PIN (4 a 8 letras ou números)", confirmPin:"Repita o PIN", firstTime:"Primeira vez: escolha um PIN que vai lembrar. Vai usá-lo sempre que entrar.",
   wrongPin:"PIN errado. Tente outra vez.", locked:"Demasiadas tentativas. Aguarde 15 minutos ou peça ao Faruk para repor o seu PIN.", pinMismatch:"Os dois PINs não coincidem.", pinRule:"O PIN deve ter 4 a 8 letras ou números.", signOut:"Sair", offline:"Sem rede", saved:"Guardado", waiting:"por sincronizar",
-  today:"Hoje", day:"Dia", period:"Período", feed:"Mensagens", account:"Conta", team:"Equipa", entries:"Registos", flags:"Pedidos", myDay:"O meu dia", settings:"Definições",
+  today:"Hoje", day:"Dia", period:"Período", feed:"Mensagens", account:"Perfil", flagged:"Assinalado", overtime:"Trabalho ao fim de semana", team:"Equipa", entries:"Registos", flags:"Pedidos", myDay:"O meu dia", settings:"Definições",
   addEntry:"Adicionar registo", editEntry:"Editar registo", copyPrev:"Copiar dia anterior", workType:"Tipo de trabalho", area:"Área de actividade", activity:"Actividade", location:"Local", summary:"Resumo das tarefas realizadas / resultados alcançados", save:"Guardar", cancel:"Cancelar", del:"Apagar", optional:"opcional",
   pickArea:"Escolha uma área", pickActivity:"Escolha (opcional)", otherAct:"Outra (descreva no resumo)", needWT:"Escolha o tipo de trabalho.", needArea:"Escolha a área de actividade.", needSum:"Escreva um breve resumo do que fez.",
   noEntries:"Ainda nada registado para este dia.", weekend:"Fim de semana", filled:"Preenchido", missing:"Em falta", notYet:"Ainda não", offDay:"Folga / férias", future:"Futuro", pending:"Ainda não sincronizado",
@@ -478,7 +484,7 @@ const ICON = {
 function renderTabs(){
   const unread = S.flags.filter(f => f.status === "open").length;
   const openTeam = S.team ? S.team.flags.filter(f => f.status === "answered").length : 0;
-  const tabs = isAdmin() ? [["team",t("team")],["entries",t("entries")],["flags",t("flags"),openTeam],["day",t("myDay")],["settings",t("settings")]]
+  const tabs = isAdmin() ? [["team",t("team")],["entries",t("entries")],["flags",t("flags"),openTeam],["day",t("myDay")],["settings",t("settings")],["account",t("account")]]
     : [["day",t("day")],["period",t("period")],["feed",t("feed"),unread],["account",t("account")]];
   $("#tabsIn").innerHTML = tabs.map(([k,l,b]) => `<button type="button" data-tab="${k}" aria-current="${S.tab === k || (k === "day" && S.tab === "period" && isAdmin()) || (k === "team" && S.tab === "person") ? "page" : "false"}"><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[k === "day" && isAdmin() ? "day" : k]}</svg><span>${esc(l)}</span>${b ? `<span class="badge">${b}</span>` : ""}</button>`).join("");
   $("#tabs").hidden = false;
@@ -556,8 +562,9 @@ function wireForm(){
 function calendar(start, list, flags, onClickAct){
   const end = periodEnd(start), days = daysIn(start, end), first = (dt(start).getDay() + 6) % 7;
   return `<div class="cal">${t("wd").map(w => `<div class="wd">${esc(w)}</div>`).join("")}${"<div class='pad'></div>".repeat(first)}${days.map(s => { const st = dayStatus(s, list), fl = flags.some(f => f.entryDate === s && f.status !== "resolved");
-    return `<button type="button" class="d ${st}${s === S.today ? " today" : ""}" data-act="${onClickAct}" data-d="${s}" title="${esc(fmtDay(s))}">${dt(s).getDate()}<small>${s.slice(8) === "01" || s === start ? esc(t("months")[dt(s).getMonth()].slice(0,3)) : ""}</small>${fl ? '<i class="dot"></i>' : ""}</button>`; }).join("")}</div>
-    <div class="legend"><span><i style="background:var(--ok-wash);border:1px solid var(--ok)"></i>${esc(t("filled"))}</span><span><i style="background:var(--off-wash);border:1px solid var(--off)"></i>${esc(t("offDay"))}</span><span><i style="background:var(--bad-wash);border:1px solid var(--bad)"></i>${esc(t("missing"))}</span><span><i style="background:var(--warn)"></i>${esc(t("flags"))}</span></div>`;
+    const cls = fl ? "flag" : st, ot = isWeekend(s) && (st === "filled" || st === "offd");
+    return `<button type="button" class="d ${cls}${isWeekend(s) ? " we" : ""}${s === S.today ? " today" : ""}" data-act="${onClickAct}" data-d="${s}" title="${esc(fmtDay(s) + " · " + t(cls === "flag" ? "flagged" : cls === "offd" ? "offDay" : cls === "filled" && ot ? "overtime" : cls))}">${dt(s).getDate()}<small>${s.slice(8) === "01" || s === start ? esc(t("months")[dt(s).getMonth()].slice(0,3)) : ""}</small>${fl && st === "filled" ? '<i class="dot"></i>' : ""}</button>`; }).join("")}</div>
+    <div class="legend"><span><i style="background:var(--cal-ok)"></i>${esc(t("filled"))}</span><span><i style="background:var(--cal-miss)"></i>${esc(t("missing"))}</span><span><i style="background:var(--cal-flag)"></i>${esc(t("flagged"))}</span><span><i style="background:var(--cal-off)"></i>${esc(t("offDay"))}</span><span><i style="border:1px solid var(--line-2);opacity:.5"></i>${esc(t("weekend"))}</span></div>`;
 }
 function summaryTable(st){
   const L2 = S.lists || {workTypes:[]}, names = L2.workTypes.map(w => w.name).concat(Object.keys(st.byType).filter(k => !L2.workTypes.some(w => w.name === k)));
@@ -677,8 +684,8 @@ async function renderSettings(){
     <div class="card"><div class="row" style="justify-content:space-between"><h3>${esc(t("staffList"))}</h3><button class="btn sm" data-act="newStaff">+ ${esc(t("addStaff"))}</button></div>
       ${ed ? staffForm(ed) : ""}<div id="staffRows">${staff.map(s => `<div class="srow"><span><b>${esc(s.name)}</b> ${s.role === "admin" ? `<span class="chip info">${esc(t("roleAdmin").split(" (")[0])}</span>` : ""}${s.active === false ? ` <span class="chip mute">off</span>` : ""}<div class="small muted"><span class="mono">${esc(s.username || "")}</span> · ${esc(s.email || "")}${s.emailExternal ? ` <span class="chip warn">${esc(t("personalEmail"))}</span>` : ""} · ${esc(s.hasPin ? t("hasPin") : t("noPin"))}</div><div class="small muted">${esc([s.position, s.station, s.lineManager && (t("lineManager") + ": " + s.lineManager)].filter(Boolean).join(" · "))}</div></span><span class="row" style="gap:6px"><button class="btn sm" data-act="editStaff" data-id="${esc(s.id)}">${esc(t("editEntry").split(" ")[0])}</button>${s.hasPin ? `<button class="btn sm ghost" data-act="resetPin" data-id="${esc(s.id)}">${esc(t("resetPin"))}</button>` : ""}</span></div>`).join("")}</div></div>
     <div id="listsBox">${listsHtml()}</div>
-    ${emailCard()}${pinCard()}<div class="card"><button class="btn danger" data-act="signOut">${esc(t("signOut"))}</button></div>`;
-  wirePin(); wireEmail(); wireLists();
+`;
+  wireLists();
   if (!S.team){ try { await loadTeam(S.pStart || periodStart(S.today)); if (S.tab === "settings") renderSettings(); } catch(e){} }
 }
 function staffForm(s){
