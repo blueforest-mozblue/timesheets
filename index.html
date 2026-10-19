@@ -126,7 +126,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand-2)
 .tgrid .c.flag{background:var(--cal-flag);border-color:var(--cal-flag)}
 .tgrid .c.offd{background:var(--cal-off);border-color:var(--cal-off)}
 .tgrid .c.weekend{opacity:.4}
-.tgrid .c.future{border-style:dashed}.tgrid .c.future.we{opacity:.4}
+.tgrid .c.future{border-style:dashed}.tgrid .c.due{background:transparent;border:2px dashed var(--ink)}.tgrid .c.due.td{box-shadow:none}.tgrid .c.future.we{opacity:.4}
 .tgrid .c.td{box-shadow:0 0 0 2px var(--card),0 0 0 3.5px var(--ink)}
 .part{display:flex;flex-direction:column;gap:12px}
 .part+.part{border-top:1px dashed var(--line-2);padding-top:14px}
@@ -145,6 +145,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand-2)
 .cal .d.offd{background:var(--cal-off);border-color:var(--cal-off)}
 .cal .d.weekend{background:transparent;color:var(--faint);opacity:.4}
 .cal .d.future{color:var(--faint);background:transparent;border-style:dashed}
+.cal .d.due{background:transparent;border:2px dashed var(--ink-2);color:var(--ink);font-weight:600}
+.cal .d.due small{color:var(--muted)}
+.cal .d.due.today{box-shadow:none;border-color:var(--ink)}
 .cal .d.future.we{opacity:.4}
 .cal .d.today{box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--ink)}
 .cal .d .dot{position:absolute;top:5px;right:6px;width:7px;height:7px;border-radius:50%;background:#fff}
@@ -265,7 +268,7 @@ const L = {
   e_invalid_pin:"PIN must be 4 to 8 digits.", e_username_taken:"That username is already taken.", e_name_required:"Name is required.", signIn:"Sign in", yourName:"Your name", choose:"Choose your name", pin:"PIN", createPin:"Create your PIN (4 to 8 letters or numbers)", confirmPin:"Repeat PIN", firstTime:"First time here: choose a PIN you will remember. You will use it every time you sign in.",
   wrongPin:"Wrong PIN. Try again.", locked:"Too many attempts. Wait 15 minutes, or ask Faruk to reset your PIN.", pinMismatch:"The two PINs do not match.", pinRule:"PIN must be 4 to 8 letters or numbers.", signOut:"Sign out", offline:"Offline", saved:"Saved", waiting:"waiting to sync",
   today:"Today", day:"Day", period:"Period", feed:"Messages", account:"Profile", flagged:"Flagged", overtime:"Weekend work", team:"Team", entries:"Entries", flags:"Flags", myDay:"My day", settings:"Settings",
-  addEntry:"Add entry", addPart:"Add another part", addPartHint:"Worked in more than one activity area, or in the field and the office on the same day? Add a part for each.", partN:"Part {n}", deleteFlag:"Delete flag", deleteReply:"Delete reply", deleteMyReply:"Delete my reply", tapAgain:"Tap again to delete", flagDeleted:"Flag deleted.", replyDeleted:"Reply deleted.", viewList:"List", viewCal:"Calendar", gridHint:"Tap a day to open that person on that date. Scroll sideways to see the whole period.", removePart:"Remove", partsDay:"{n} parts recorded for this day.", editEntry:"Edit entry", copyPrev:"Copy previous day", workType:"Work type", area:"Activity area", activity:"Activity", location:"Location", summary:"Summary of tasks performed / results achieved", save:"Save", cancel:"Cancel", del:"Delete", optional:"optional",
+  addEntry:"Add entry", addPart:"Add another part", addPartHint:"Worked in more than one activity area, or in the field and the office on the same day? Add a part for each.", partN:"Part {n}", deleteFlag:"Delete flag", dueToday:"Due today", deleteReply:"Delete reply", deleteMyReply:"Delete my reply", tapAgain:"Tap again to delete", flagDeleted:"Flag deleted.", replyDeleted:"Reply deleted.", viewList:"List", viewCal:"Calendar", gridHint:"Tap a day to open that person on that date. Scroll sideways to see the whole period.", removePart:"Remove", partsDay:"{n} parts recorded for this day.", editEntry:"Edit entry", copyPrev:"Copy previous day", workType:"Work type", area:"Activity area", activity:"Activity", location:"Location", summary:"Summary of tasks performed / results achieved", save:"Save", cancel:"Cancel", del:"Delete", optional:"optional",
   pickArea:"Choose an area", pickActivity:"Choose (optional)", otherAct:"Other (describe in summary)", needWT:"Choose a work type.", needArea:"Choose an activity area.", needSum:"Write a short summary of what you did.",
   noEntries:"Nothing recorded for this day yet.", weekend:"Weekend", filled:"Filled", missing:"Missing", notYet:"Not yet", offDay:"Day off / leave", future:"Future", pending:"Not synced yet",
   summaryDays:"Summary of days", totalWork:"Total working days", notFilled:"Weekdays not filled in", dlMine:"Download my timesheet (Excel)", periodWord:"Period",
@@ -286,7 +289,7 @@ const L = {
   e_invalid_pin:"O PIN deve ter 4 a 8 dígitos.", e_username_taken:"Esse nome de utilizador já existe.", e_name_required:"O nome é obrigatório.", signIn:"Entrar", yourName:"O seu nome", choose:"Escolha o seu nome", pin:"PIN", createPin:"Crie o seu PIN (4 a 8 letras ou números)", confirmPin:"Repita o PIN", firstTime:"Primeira vez: escolha um PIN que vai lembrar. Vai usá-lo sempre que entrar.",
   wrongPin:"PIN errado. Tente outra vez.", locked:"Demasiadas tentativas. Aguarde 15 minutos ou peça ao Faruk para repor o seu PIN.", pinMismatch:"Os dois PINs não coincidem.", pinRule:"O PIN deve ter 4 a 8 letras ou números.", signOut:"Sair", offline:"Sem rede", saved:"Guardado", waiting:"por sincronizar",
   today:"Hoje", day:"Dia", period:"Período", feed:"Mensagens", account:"Perfil", flagged:"Assinalado", overtime:"Trabalho ao fim de semana", team:"Equipa", entries:"Registos", flags:"Pedidos", myDay:"O meu dia", settings:"Definições",
-  addEntry:"Adicionar registo", addPart:"Adicionar outra parte", addPartHint:"Trabalhou em mais de uma área de actividade, ou no campo e no escritório no mesmo dia? Adicione uma parte para cada.", partN:"Parte {n}", deleteFlag:"Apagar pedido", deleteReply:"Apagar resposta", deleteMyReply:"Apagar a minha resposta", tapAgain:"Toque de novo para apagar", flagDeleted:"Pedido apagado.", replyDeleted:"Resposta apagada.", viewList:"Lista", viewCal:"Calendário", gridHint:"Toque num dia para abrir essa pessoa nessa data. Deslize para o lado para ver o período completo.", removePart:"Remover", partsDay:"{n} partes registadas para este dia.", editEntry:"Editar registo", copyPrev:"Copiar dia anterior", workType:"Tipo de trabalho", area:"Área de actividade", activity:"Actividade", location:"Local", summary:"Resumo das tarefas realizadas / resultados alcançados", save:"Guardar", cancel:"Cancelar", del:"Apagar", optional:"opcional",
+  addEntry:"Adicionar registo", addPart:"Adicionar outra parte", addPartHint:"Trabalhou em mais de uma área de actividade, ou no campo e no escritório no mesmo dia? Adicione uma parte para cada.", partN:"Parte {n}", deleteFlag:"Apagar pedido", dueToday:"Para hoje", deleteReply:"Apagar resposta", deleteMyReply:"Apagar a minha resposta", tapAgain:"Toque de novo para apagar", flagDeleted:"Pedido apagado.", replyDeleted:"Resposta apagada.", viewList:"Lista", viewCal:"Calendário", gridHint:"Toque num dia para abrir essa pessoa nessa data. Deslize para o lado para ver o período completo.", removePart:"Remover", partsDay:"{n} partes registadas para este dia.", editEntry:"Editar registo", copyPrev:"Copiar dia anterior", workType:"Tipo de trabalho", area:"Área de actividade", activity:"Actividade", location:"Local", summary:"Resumo das tarefas realizadas / resultados alcançados", save:"Guardar", cancel:"Cancelar", del:"Apagar", optional:"opcional",
   pickArea:"Escolha uma área", pickActivity:"Escolha (opcional)", otherAct:"Outra (descreva no resumo)", needWT:"Escolha o tipo de trabalho.", needArea:"Escolha a área de actividade.", needSum:"Escreva um breve resumo do que fez.",
   noEntries:"Ainda nada registado para este dia.", weekend:"Fim de semana", filled:"Preenchido", missing:"Em falta", notYet:"Ainda não", offDay:"Folga / férias", future:"Futuro", pending:"Ainda não sincronizado",
   summaryDays:"Resumo dos dias", totalWork:"Total de dias de trabalho", notFilled:"Dias úteis por preencher", dlMine:"Descarregar a minha folha (Excel)", periodWord:"Período",
@@ -344,16 +347,21 @@ const periodLabel = start => fmtLong(start) + " – " + fmtLong(periodEnd(start)
 const isWeekend = s => { const g = dt(s).getDay(); return g === 0 || g === 6; };
 const wtInfo = name => (S.lists && S.lists.workTypes || []).find(w => w.name === name) || {name, working: true};
 const isWorking = name => !!wtInfo(name).working;
+// The working day closes at 8 PM Maputo time (UTC+2, no daylight saving); until then an empty today is "due", not "missing".
+const CUTOFF_HOUR = 20;
+function mozNow(){ const m = new Date(Date.now() + 2 * 3600e3); return {date: m.toISOString().slice(0, 10), hour: m.getUTCHours()}; }
+function dayClosed(s){ const n = mozNow(); return s < n.date || (s === n.date && n.hour >= CUTOFF_HOUR); }
 function dayStatus(s, list){
   const es = list.filter(e => e.date === s && !e.deleted);
   if (es.length) return es.some(e => isWorking(e.workType)) ? "filled" : "offd";
   if (s > S.today) return "future";
   if (isWeekend(s)) return "weekend";
+  if (s === S.today && !dayClosed(s)) return "due";
   return "missing";
 }
 function periodStats(start, list){
   const end = periodEnd(start), all = daysIn(start, end), upto = all.filter(s => s <= S.today);
-  const expected = upto.filter(s => !isWeekend(s)), filledWd = expected.filter(s => list.some(e => e.date === s && !e.deleted));
+  const expected = upto.filter(s => !isWeekend(s) && (s < S.today || dayClosed(s) || list.some(e => e.date === s && !e.deleted))), filledWd = expected.filter(s => list.some(e => e.date === s && !e.deleted));
   const byType = {}; all.forEach(s => { const types = new Set(list.filter(e => e.date === s && !e.deleted).map(e => e.workType || "?")); types.forEach(w => byType[w] = (byType[w] || 0) + 1); });
   const working = all.filter(s => list.some(e => e.date === s && !e.deleted && isWorking(e.workType))).length;
   const last = list.filter(e => !e.deleted).map(e => e.date).sort().pop() || "";
@@ -540,7 +548,7 @@ function flagBox(f){
 function renderDay(){
   const d = S.date || S.today, mine = S.entries.filter(e => e.date === d && !e.deleted), st = dayStatus(d, S.entries);
   const dayFlags = S.flags.filter(f => f.entryDate === d), loose = dayFlags.filter(f => !f.entryId || !mine.some(e => e.id === f.entryId));
-  const stChip = {filled:["ok",t("filled")], offd:["off",t("offDay")], missing:["bad",t("missing")], weekend:["mute",t("weekend")], future:["mute",t("future")]}[st];
+  const stChip = {filled:["ok",t("filled")], offd:["off",t("offDay")], missing:["bad",t("missing")], weekend:["mute",t("weekend")], future:["mute",t("future")], due:["mute",t("dueToday")]}[st];
   const editing = S.edit;
   $("#main").innerHTML = `<div class="dayhead"><button class="nav" data-act="shiftDay" data-n="-1" aria-label="Previous day">‹</button><div class="mid"><b>${esc(fmtDay(d))}</b><span>${dt(d).getFullYear()} · <span class="chip ${stChip[0]}">${esc(stChip[1])}</span></span></div><button class="nav" data-act="shiftDay" data-n="1" aria-label="Next day">›</button></div>
     <div class="daytools"><button class="btn sm" data-act="goToday">${esc(t("today"))}</button><input type="date" id="pickDate" value="${d}" aria-label="Date">${isAdmin() ? `<button class="btn sm" data-act="tab" data-v="period">${esc(t("period"))}</button>` : ""}</div>
@@ -599,8 +607,8 @@ function calendar(start, list, flags, onClickAct){
   const end = periodEnd(start), days = daysIn(start, end), first = (dt(start).getDay() + 6) % 7;
   return `<div class="cal">${t("wd").map(w => `<div class="wd">${esc(w)}</div>`).join("")}${"<div class='pad'></div>".repeat(first)}${days.map(s => { const st = dayStatus(s, list), fl = flags.some(f => f.entryDate === s && f.status !== "resolved");
     const cls = fl ? "flag" : st, ot = isWeekend(s) && (st === "filled" || st === "offd");
-    return `<button type="button" class="d ${cls}${isWeekend(s) ? " we" : ""}${s === S.today ? " today" : ""}" data-act="${onClickAct}" data-d="${s}" title="${esc(fmtDay(s) + " · " + t(cls === "flag" ? "flagged" : cls === "offd" ? "offDay" : cls === "filled" && ot ? "overtime" : cls))}">${dt(s).getDate()}<small>${s.slice(8) === "01" || s === start ? esc(t("months")[dt(s).getMonth()].slice(0,3)) : ""}</small>${fl && st === "filled" ? '<i class="dot"></i>' : ""}</button>`; }).join("")}</div>
-    <div class="legend"><span><i style="background:var(--cal-ok)"></i>${esc(t("filled"))}</span><span><i style="background:var(--cal-miss)"></i>${esc(t("missing"))}</span><span><i style="background:var(--cal-flag)"></i>${esc(t("flagged"))}</span><span><i style="background:var(--cal-off)"></i>${esc(t("offDay"))}</span><span><i style="border:1px solid var(--line-2);opacity:.5"></i>${esc(t("weekend"))}</span></div>`;
+    return `<button type="button" class="d ${cls}${isWeekend(s) ? " we" : ""}${s === S.today ? " today" : ""}" data-act="${onClickAct}" data-d="${s}" title="${esc(fmtDay(s) + " · " + t(cls === "flag" ? "flagged" : cls === "offd" ? "offDay" : cls === "due" ? "dueToday" : cls === "filled" && ot ? "overtime" : cls))}">${dt(s).getDate()}<small>${s.slice(8) === "01" || s === start ? esc(t("months")[dt(s).getMonth()].slice(0,3)) : ""}</small>${fl && st === "filled" ? '<i class="dot"></i>' : ""}</button>`; }).join("")}</div>
+    <div class="legend"><span><i style="background:var(--cal-ok)"></i>${esc(t("filled"))}</span><span><i style="background:var(--cal-miss)"></i>${esc(t("missing"))}</span><span><i style="background:var(--cal-flag)"></i>${esc(t("flagged"))}</span><span><i style="background:var(--cal-off)"></i>${esc(t("offDay"))}</span><span><i style="border:1.5px dashed var(--ink-2)"></i>${esc(t("dueToday"))}</span><span><i style="border:1px solid var(--line-2);opacity:.5"></i>${esc(t("weekend"))}</span></div>`;
 }
 function summaryTable(st){
   const L2 = S.lists || {workTypes:[]}, names = L2.workTypes.map(w => w.name).concat(Object.keys(st.byType).filter(k => !L2.workTypes.some(w => w.name === k)));
@@ -681,9 +689,9 @@ function teamGrid(ppl){
   const head = `<tr><th class="nm"></th>${days.map(s => `<th class="${isWeekend(s) ? "we" : ""}${s === S.today ? " td" : ""}"><span>${esc(wd[(dt(s).getDay() + 6) % 7].slice(0,1))}</span>${dt(s).getDate()}</th>`).join("")}</tr>`;
   const rows = ppl.map(p => { const list = S.team.entries.filter(e => e.staffId === p.id), fl = S.team.flags.filter(f => f.staffId === p.id && f.status !== "resolved");
     return `<tr><th class="nm" data-act="openPerson" data-id="${esc(p.id)}">${esc(p.name)}</th>${days.map(s => { const st = dayStatus(s, list), cls = fl.some(f => f.entryDate === s) ? "flag" : st;
-      return `<td><button type="button" class="c ${cls}${isWeekend(s) ? " we" : ""}${s === S.today ? " td" : ""}" data-act="openPerson" data-id="${esc(p.id)}" data-d="${s}" title="${esc(p.name + " · " + fmtDay(s) + " · " + t(cls === "flag" ? "flagged" : cls === "offd" ? "offDay" : cls))}" aria-label="${esc(p.name + " " + fmtDay(s) + " " + t(cls === "flag" ? "flagged" : cls === "offd" ? "offDay" : cls))}"></button></td>`; }).join("")}</tr>`; }).join("");
+      return `<td><button type="button" class="c ${cls}${isWeekend(s) ? " we" : ""}${s === S.today ? " td" : ""}" data-act="openPerson" data-id="${esc(p.id)}" data-d="${s}" title="${esc(p.name + " · " + fmtDay(s) + " · " + t(cls === "flag" ? "flagged" : cls === "offd" ? "offDay" : cls === "due" ? "dueToday" : cls))}" aria-label="${esc(p.name + " " + fmtDay(s) + " " + t(cls === "flag" ? "flagged" : cls === "offd" ? "offDay" : cls === "due" ? "dueToday" : cls))}"></button></td>`; }).join("")}</tr>`; }).join("");
   return `<div class="card"><div class="tgrid"><table>${head}${rows}</table></div>
-    <div class="legend"><span><i style="background:var(--cal-ok)"></i>${esc(t("filled"))}</span><span><i style="background:var(--cal-miss)"></i>${esc(t("missing"))}</span><span><i style="background:var(--cal-flag)"></i>${esc(t("flagged"))}</span><span><i style="background:var(--cal-off)"></i>${esc(t("offDay"))}</span><span><i style="border:1px solid var(--line-2);opacity:.5"></i>${esc(t("weekend"))}</span></div>
+    <div class="legend"><span><i style="background:var(--cal-ok)"></i>${esc(t("filled"))}</span><span><i style="background:var(--cal-miss)"></i>${esc(t("missing"))}</span><span><i style="background:var(--cal-flag)"></i>${esc(t("flagged"))}</span><span><i style="background:var(--cal-off)"></i>${esc(t("offDay"))}</span><span><i style="border:1.5px dashed var(--ink-2)"></i>${esc(t("dueToday"))}</span><span><i style="border:1px solid var(--line-2);opacity:.5"></i>${esc(t("weekend"))}</span></div>
     <p class="small muted" style="margin:8px 0 0">${esc(t("gridHint"))}</p></div>`;
 }
 async function renderPerson(){
@@ -901,6 +909,8 @@ async function flagDelete(kind, id){
   } catch(e){ toast(t("needOnline")); }
 }
 async function flagStatus(id, reopen){ try { const r = await authed("resolveFlag", {flagId: id, reopen}); if (r.ok){ const i = S.team.flags.findIndex(f => f.id === id); S.team.flags[i] = r.flag; render(); } } catch(e){ toast(t("needOnline")); } }
+S.closedSeen = dayClosed(S.today);
+setInterval(() => { const c = dayClosed(S.today); if (c !== S.closedSeen){ S.closedSeen = c; if (S.session && !S.edit && !S.composing && !listsDirty()) render(); } }, 60000);
 document.addEventListener("click", ev => { const el = ev.target.closest("[data-act]"); if (!el || !ACT[el.dataset.act]) return; if (el.tagName === "A") ev.preventDefault(); ACT[el.dataset.act](el); });
 document.addEventListener("submit", async ev => {
   if (ev.target.id !== "staffForm") return; ev.preventDefault();
