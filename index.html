@@ -265,7 +265,7 @@ const L = {
   e_invalid_pin:"PIN must be 4 to 8 digits.", e_username_taken:"That username is already taken.", e_name_required:"Name is required.", signIn:"Sign in", yourName:"Your name", choose:"Choose your name", pin:"PIN", createPin:"Create your PIN (4 to 8 letters or numbers)", confirmPin:"Repeat PIN", firstTime:"First time here: choose a PIN you will remember. You will use it every time you sign in.",
   wrongPin:"Wrong PIN. Try again.", locked:"Too many attempts. Wait 15 minutes, or ask Faruk to reset your PIN.", pinMismatch:"The two PINs do not match.", pinRule:"PIN must be 4 to 8 letters or numbers.", signOut:"Sign out", offline:"Offline", saved:"Saved", waiting:"waiting to sync",
   today:"Today", day:"Day", period:"Period", feed:"Messages", account:"Profile", flagged:"Flagged", overtime:"Weekend work", team:"Team", entries:"Entries", flags:"Flags", myDay:"My day", settings:"Settings",
-  addEntry:"Add entry", addPart:"Add another part", addPartHint:"Worked in more than one activity area, or in the field and the office on the same day? Add a part for each.", partN:"Part {n}", viewList:"List", viewCal:"Calendar", gridHint:"Tap a day to open that person on that date. Scroll sideways to see the whole period.", removePart:"Remove", partsDay:"{n} parts recorded for this day.", editEntry:"Edit entry", copyPrev:"Copy previous day", workType:"Work type", area:"Activity area", activity:"Activity", location:"Location", summary:"Summary of tasks performed / results achieved", save:"Save", cancel:"Cancel", del:"Delete", optional:"optional",
+  addEntry:"Add entry", addPart:"Add another part", addPartHint:"Worked in more than one activity area, or in the field and the office on the same day? Add a part for each.", partN:"Part {n}", deleteFlag:"Delete flag", deleteReply:"Delete reply", deleteMyReply:"Delete my reply", tapAgain:"Tap again to delete", flagDeleted:"Flag deleted.", replyDeleted:"Reply deleted.", viewList:"List", viewCal:"Calendar", gridHint:"Tap a day to open that person on that date. Scroll sideways to see the whole period.", removePart:"Remove", partsDay:"{n} parts recorded for this day.", editEntry:"Edit entry", copyPrev:"Copy previous day", workType:"Work type", area:"Activity area", activity:"Activity", location:"Location", summary:"Summary of tasks performed / results achieved", save:"Save", cancel:"Cancel", del:"Delete", optional:"optional",
   pickArea:"Choose an area", pickActivity:"Choose (optional)", otherAct:"Other (describe in summary)", needWT:"Choose a work type.", needArea:"Choose an activity area.", needSum:"Write a short summary of what you did.",
   noEntries:"Nothing recorded for this day yet.", weekend:"Weekend", filled:"Filled", missing:"Missing", notYet:"Not yet", offDay:"Day off / leave", future:"Future", pending:"Not synced yet",
   summaryDays:"Summary of days", totalWork:"Total working days", notFilled:"Weekdays not filled in", dlMine:"Download my timesheet (Excel)", periodWord:"Period",
@@ -286,7 +286,7 @@ const L = {
   e_invalid_pin:"O PIN deve ter 4 a 8 dígitos.", e_username_taken:"Esse nome de utilizador já existe.", e_name_required:"O nome é obrigatório.", signIn:"Entrar", yourName:"O seu nome", choose:"Escolha o seu nome", pin:"PIN", createPin:"Crie o seu PIN (4 a 8 letras ou números)", confirmPin:"Repita o PIN", firstTime:"Primeira vez: escolha um PIN que vai lembrar. Vai usá-lo sempre que entrar.",
   wrongPin:"PIN errado. Tente outra vez.", locked:"Demasiadas tentativas. Aguarde 15 minutos ou peça ao Faruk para repor o seu PIN.", pinMismatch:"Os dois PINs não coincidem.", pinRule:"O PIN deve ter 4 a 8 letras ou números.", signOut:"Sair", offline:"Sem rede", saved:"Guardado", waiting:"por sincronizar",
   today:"Hoje", day:"Dia", period:"Período", feed:"Mensagens", account:"Perfil", flagged:"Assinalado", overtime:"Trabalho ao fim de semana", team:"Equipa", entries:"Registos", flags:"Pedidos", myDay:"O meu dia", settings:"Definições",
-  addEntry:"Adicionar registo", addPart:"Adicionar outra parte", addPartHint:"Trabalhou em mais de uma área de actividade, ou no campo e no escritório no mesmo dia? Adicione uma parte para cada.", partN:"Parte {n}", viewList:"Lista", viewCal:"Calendário", gridHint:"Toque num dia para abrir essa pessoa nessa data. Deslize para o lado para ver o período completo.", removePart:"Remover", partsDay:"{n} partes registadas para este dia.", editEntry:"Editar registo", copyPrev:"Copiar dia anterior", workType:"Tipo de trabalho", area:"Área de actividade", activity:"Actividade", location:"Local", summary:"Resumo das tarefas realizadas / resultados alcançados", save:"Guardar", cancel:"Cancelar", del:"Apagar", optional:"opcional",
+  addEntry:"Adicionar registo", addPart:"Adicionar outra parte", addPartHint:"Trabalhou em mais de uma área de actividade, ou no campo e no escritório no mesmo dia? Adicione uma parte para cada.", partN:"Parte {n}", deleteFlag:"Apagar pedido", deleteReply:"Apagar resposta", deleteMyReply:"Apagar a minha resposta", tapAgain:"Toque de novo para apagar", flagDeleted:"Pedido apagado.", replyDeleted:"Resposta apagada.", viewList:"Lista", viewCal:"Calendário", gridHint:"Toque num dia para abrir essa pessoa nessa data. Deslize para o lado para ver o período completo.", removePart:"Remover", partsDay:"{n} partes registadas para este dia.", editEntry:"Editar registo", copyPrev:"Copiar dia anterior", workType:"Tipo de trabalho", area:"Área de actividade", activity:"Actividade", location:"Local", summary:"Resumo das tarefas realizadas / resultados alcançados", save:"Guardar", cancel:"Cancelar", del:"Apagar", optional:"opcional",
   pickArea:"Escolha uma área", pickActivity:"Escolha (opcional)", otherAct:"Outra (descreva no resumo)", needWT:"Escolha o tipo de trabalho.", needArea:"Escolha a área de actividade.", needSum:"Escreva um breve resumo do que fez.",
   noEntries:"Ainda nada registado para este dia.", weekend:"Fim de semana", filled:"Preenchido", missing:"Em falta", notYet:"Ainda não", offDay:"Folga / férias", future:"Futuro", pending:"Ainda não sincronizado",
   summaryDays:"Resumo dos dias", totalWork:"Total de dias de trabalho", notFilled:"Dias úteis por preencher", dlMine:"Descarregar a minha folha (Excel)", periodWord:"Período",
@@ -534,6 +534,7 @@ function flagBox(f){
   const open = f.status === "open";
   return `<div class="flagbox${f.status === "resolved" ? " done" : ""}"><div class="who">${esc(f.createdBy)} ${esc(t("asked"))} · ${esc(fmtShort((f.createdAt || "").slice(0,10) || S.today))} · <span class="chip ${open ? "warn" : f.status === "answered" ? "info" : "mute"}">${esc(open ? t("open") : t(f.status))}</span></div>
     <div class="q">${esc(f.message)}</div>${f.reply ? `<div class="a">${esc(f.reply)}</div>` : ""}
+    ${f.reply && f.status === "answered" ? `<div class="row" style="margin-top:6px">${delBtn("reply", f.id, t("deleteMyReply"))}</div>` : ""}
     ${open ? `<textarea data-reply="${esc(f.id)}" placeholder="${esc(t("yourReply"))}"></textarea><div class="row" style="margin-top:6px"><button class="btn sm primary" data-act="sendReply" data-id="${esc(f.id)}">${esc(t("sendReply"))}</button></div>` : ""}</div>`;
 }
 function renderDay(){
@@ -661,12 +662,17 @@ async function renderTeam(force){
         <span class="r"><span class="mono">${st.filled}/${st.expected} ${esc(t("days"))}</span>${st.missing ? `<span class="chip bad">${st.missing} ${esc(t("missing").toLowerCase())}</span>` : `<span class="chip ok">${esc(t("filled"))}</span>`}${fo.length ? `<span class="chip ${ans ? "info" : "warn"}">${fo.length} ${esc(t("flags").toLowerCase())}</span>` : ""}<span class="small muted">${esc(t("lastEntry"))}: ${st.last ? esc(fmtShort(st.last)) : esc(t("noEntryYet"))}</span></span></div>`; }).join("")}</div>`}
     <div class="row"><button class="btn" data-act="exportAll">${esc(t("exportAll"))}</button></div>`;
 }
+function delBtn(kind, id, label){ const armed = S.confirmDel === kind + ":" + id;
+  return `<button class="btn sm ${armed ? "danger" : "ghost"}" type="button" data-act="${kind === "flag" ? "deleteFlag" : "deleteReply"}" data-id="${esc(id)}">${esc(armed ? t("tapAgain") : label)}</button>`; }
+function adminFlagActions(f){
+  return `<div class="row" style="margin-top:8px;gap:6px">${f.status !== "resolved" ? `<button class="btn sm" data-act="resolveFlag" data-id="${esc(f.id)}">${esc(t("resolve"))}</button>` : `<button class="btn sm ghost" data-act="reopenFlag" data-id="${esc(f.id)}">${esc(t("reopen"))}</button>`}<span class="grow"></span>${f.reply ? delBtn("reply", f.id, t("deleteReply")) : ""}${delBtn("flag", f.id, t("deleteFlag"))}</div>`;
+}
 function entryRow(e, p, opts){
   const fl = S.team.flags.filter(f => (e.id && f.entryId === e.id) || (!e.id && !f.entryId && f.staffId === p.id && f.entryDate === e.date));
   const key = e.id || ("miss:" + p.id + ":" + e.date), composing = S.composing === key;
   return `<div class="erow${e.id ? "" : " miss"}"><div class="dt"><b>${dt(e.date).getDate()} ${esc(t("months")[dt(e.date).getMonth()].slice(0,3))}</b>${esc(t("wd")[(dt(e.date).getDay() + 6) % 7])}${opts && opts.who ? `<div style="margin-top:4px;color:var(--ink-2)">${esc(p.name.split(" ")[0])}</div>` : ""}</div>
     <div class="txt">${e.id ? `<div class="l1">${esc(e.workType)}${e.area ? " · " + esc(e.area) : ""}</div><div class="l2">${[e.activity, e.location].filter(Boolean).map(esc).join(" · ")}</div>${e.summary ? `<div class="l3">${esc(e.summary)}</div>` : ""}` : `<div class="l1">${esc(t("missing"))}</div>`}
-      ${fl.map(f => `<div class="flagbox${f.status === "resolved" ? " done" : ""}"><div class="who">${esc(f.createdBy)} · ${esc(fmtShort((f.createdAt || "").slice(0,10)))} · <span class="chip ${f.status === "open" ? "warn" : f.status === "answered" ? "info" : "mute"}">${esc(f.status === "open" ? t("awaitingReply") : t(f.status))}</span></div><div class="q">${esc(f.message)}</div>${f.reply ? `<div class="a">${esc(f.reply)}</div>` : ""}<div class="row" style="margin-top:6px">${f.status !== "resolved" ? `<button class="btn sm" data-act="resolveFlag" data-id="${esc(f.id)}">${esc(t("resolve"))}</button>` : `<button class="btn sm ghost" data-act="reopenFlag" data-id="${esc(f.id)}">${esc(t("reopen"))}</button>`}</div></div>`).join("")}
+      ${fl.map(f => `<div class="flagbox${f.status === "resolved" ? " done" : ""}"><div class="who">${esc(f.createdBy)} · ${esc(fmtShort((f.createdAt || "").slice(0,10)))} · <span class="chip ${f.status === "open" ? "warn" : f.status === "answered" ? "info" : "mute"}">${esc(f.status === "open" ? t("awaitingReply") : t(f.status))}</span></div><div class="q">${esc(f.message)}</div>${f.reply ? `<div class="a">${esc(f.reply)}</div>` : ""}${adminFlagActions(f)}</div>`).join("")}
       ${composing ? `<div class="compose"><div class="quick">${(e.id ? ["qDetail","qResult","qWhere"] : ["qMissing"]).map(q => `<button type="button" data-act="quickQ" data-q="${esc(t(q))}">${esc(t(q))}</button>`).join("")}</div><textarea id="flagText" placeholder="${esc(t("askAbout"))}"></textarea><div class="row"><button class="btn sm primary" data-act="sendFlag" data-entry="${esc(e.id)}" data-staff="${esc(p.id)}" data-date="${esc(e.date)}">${esc(t("sendFlag"))} ${esc(p.name.split(" ")[0])}</button><button class="btn sm" data-act="cancelFlag">${esc(t("cancel"))}</button></div></div>` : ""}</div>
     <div class="act">${composing ? "" : `<button class="btn sm" data-act="composeFlag" data-key="${esc(key)}">${esc(t("flagThis"))}</button>`}</div></div>`;
 }
@@ -720,7 +726,7 @@ async function renderFlags(){
   $("#fBody").innerHTML = fl.length ? fl.map(f => { const p = S.team.staff.find(s => s.id === f.staffId) || {name: f.staffId};
     return `<div class="card"><div class="row" style="justify-content:space-between"><b>${esc(p.name)}</b><a href="#" class="small" data-act="openPerson" data-id="${esc(f.staffId)}" data-d="${esc(f.entryDate)}">${esc(fmtDay(f.entryDate))}</a></div>
       <div class="flagbox${f.status === "resolved" ? " done" : ""}"><div class="who">${esc(f.createdBy)} · ${esc(fmtShort((f.createdAt || "").slice(0,10)))} · <span class="chip ${f.status === "open" ? "warn" : f.status === "answered" ? "info" : "mute"}">${esc(f.status === "open" ? t("awaitingReply") : t(f.status))}</span></div><div class="q">${esc(f.message)}</div>${f.reply ? `<div class="a">${esc(f.reply)}</div>` : ""}
-      <div class="row" style="margin-top:8px">${f.status !== "resolved" ? `<button class="btn sm" data-act="resolveFlag" data-id="${esc(f.id)}">${esc(t("resolve"))}</button>` : `<button class="btn sm ghost" data-act="reopenFlag" data-id="${esc(f.id)}">${esc(t("reopen"))}</button>`}</div></div></div>`; }).join("") : `<div class="empty">—</div>`;
+      ${adminFlagActions(f)}</div></div>`; }).join("") : `<div class="empty">—</div>`;
 }
 
 // ---------- Project Director: settings
@@ -855,6 +861,8 @@ const ACT = {
   sendFlag: async el => { const msg = ($("#flagText") || {}).value || ""; if (!msg.trim()) return;
     const req = el.dataset.entry ? {entryId: el.dataset.entry, message: msg} : {targetId: el.dataset.staff, date: el.dataset.date, message: msg};
     try { const r = await authed("flagEntry", req); if (r.ok){ S.team.flags.push(r.flag); S.composing = null; toast(t("flagSent")); render(); } else toast(r.error); } catch(e){ toast(t("needOnline")); } },
+  deleteFlag: el => flagDelete("flag", el.dataset.id),
+  deleteReply: el => flagDelete("reply", el.dataset.id),
   resolveFlag: el => flagStatus(el.dataset.id, false), reopenFlag: el => flagStatus(el.dataset.id, true),
   flagFilter: el => { S.flagFilter = el.dataset.v; renderFlags(); },
   exportAll: () => { const ppl = teamPeople(); exportPeople(ppl, S.pStart, S.team.entries, fileStamp(S.pStart) + "_AllStaff.xlsx"); },
@@ -880,6 +888,18 @@ const ACT = {
   saveLists: async () => { const c = cleanLists(draft()); if (c.error){ toast(c.error); return; }
     try { const r = await authed("saveLists", {lists: c.lists}); if (r.ok){ S.lists = r.lists; S.draft = null; S.confirmDel = null; persist(); toast(t("listsSaved")); drawLists(); } else toast(r.error); } catch(e){ toast(t("needOnline")); } }
 };
+async function flagDelete(kind, id){
+  const key = kind + ":" + id;
+  if (S.confirmDel !== key){ S.confirmDel = key; clearTimeout(S.confirmT); S.confirmT = setTimeout(() => { if (S.confirmDel === key){ S.confirmDel = null; render(); } }, 5000); render(); return; }
+  S.confirmDel = null;
+  try {
+    const r = await authed(kind === "flag" ? "deleteFlag" : "deleteReply", {flagId: id});
+    if (!r.ok){ toast(errText(r.error)); return; }
+    if (isAdmin() && S.team){ if (kind === "flag") S.team.flags = S.team.flags.filter(f => f.id !== id); else { const i = S.team.flags.findIndex(f => f.id === id); if (i >= 0) S.team.flags[i] = r.flag; } }
+    if (kind === "flag") S.flags = S.flags.filter(f => f.id !== id); else { const j = S.flags.findIndex(f => f.id === id); if (j >= 0) S.flags[j] = r.flag; }
+    persist(); toast(t(kind === "flag" ? "flagDeleted" : "replyDeleted")); render();
+  } catch(e){ toast(t("needOnline")); }
+}
 async function flagStatus(id, reopen){ try { const r = await authed("resolveFlag", {flagId: id, reopen}); if (r.ok){ const i = S.team.flags.findIndex(f => f.id === id); S.team.flags[i] = r.flag; render(); } } catch(e){ toast(t("needOnline")); } }
 document.addEventListener("click", ev => { const el = ev.target.closest("[data-act]"); if (!el || !ACT[el.dataset.act]) return; if (el.tagName === "A") ev.preventDefault(); ACT[el.dataset.act](el); });
 document.addEventListener("submit", async ev => {
